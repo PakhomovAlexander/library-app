@@ -2,4 +2,7 @@ Library Application
 =======================
 
 Simple example how to use Scala with MongoDB.
-(relation model will be add later)
+
+### Relation model:
+
+![alt text](public/images/model.jpg)
