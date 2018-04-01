@@ -1,0 +1,11 @@
+@(friends: List[Friend])
+
+@main("Friends list") {
+
+    <dl class="friends">
+    @for(friend <- friends) {
+        <dt>@friend.fio</dt>
+        <dd>@friend.comment</dd>
+    }
+    </dl>
+}
