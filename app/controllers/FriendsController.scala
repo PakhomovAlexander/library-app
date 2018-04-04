@@ -2,18 +2,20 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.Friend
+import models.friends.FriendService
 import play.api.mvc.{AbstractController, ControllerComponents}
 
 @Singleton
-class FriendsController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class FriendsController @Inject()(friendService: FriendService,
+                                  cc: ControllerComponents
+                                 ) extends AbstractController(cc) {
   def list = Action { implicit request =>
-    val friends = Friend.findAll()
+    val friends = friendService.findAll()
     Ok(views.html.friends.list(friends))
   }
 
   def show(id: Long) = Action { implicit request =>
-    Friend.findById(id).map { product =>
+    friendService.findById(id).map { product =>
       Ok(views.html.friends.details(product))
     }.getOrElse(NotFound)
   }
