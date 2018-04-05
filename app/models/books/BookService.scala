@@ -1,6 +1,5 @@
 package models.books
 
-trait BookService {
-  def findAll(): List[Book]
-  def findById(id: Long): Option[Book]
-}
+import models.services.{BasicService, PageService}
+
+trait BookService extends BasicService[Book] with PageService[Book]

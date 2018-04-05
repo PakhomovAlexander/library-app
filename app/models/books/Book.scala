@@ -2,6 +2,8 @@ package models.books
 
 import java.util.Date
 
+import models.genres.Genre
+
 case class Book(id: Long,
                 name: String,
                 author: String,
@@ -10,4 +12,4 @@ case class Book(id: Long,
                 translator: Option[String],
                 comment: Option[String],
                 pubHouseName: Option[String],
-                genre: Option[String])
+                genre: Option[Genre])
