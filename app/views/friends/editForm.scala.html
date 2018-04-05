@@ -1,0 +1,30 @@
+@(id: Long, friendForm: Form[models.friends.Friend])(implicit messages: Messages)
+
+    @import b3.vertical.fieldConstructor
+
+
+    @main("Edit friend") {
+
+        <h1>Edit friend</h1>
+
+        @b3.form(action = routes.FriendsController.update(id)) {
+            <fieldset>
+                @b3.text(friendForm("FIO"), '_label -> "FIO", '_help -> "")
+                @b3.text(friendForm("Phone number"), '_label -> "Phone number", '_help -> "")
+                @b3.text(friendForm("Social networks"), '_label -> "Social networks", '_help -> "")
+                @b3.email(friendForm("Email"), '_label -> "Email", '_help -> "")
+                @b3.text(friendForm("Comment"), '_label -> "Comment", '_help -> "")
+
+            </fieldset>
+            <div class="actions">
+                <input type="submit" value="Save this friend" class="btn primary"> or
+                <a href="@routes.FriendsController.list()" class="btn">Close</a>
+            </div>
+
+        }
+
+        @b3.form(routes.FriendsController.delete(id), 'class -> "topRight") {
+            <input type="submit" value="Delete this friend" class="btn danger">
+        }
+
+    }

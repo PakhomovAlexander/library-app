@@ -1,6 +1,6 @@
 package models.friends
 
-case class Friend(id: Long,
+case class Friend(id: Option[Long],
                   fio: String,
                   phoneNumber: Option[String],
                   socialNumber: Option[String],
@@ -15,7 +15,7 @@ object Friend {
             email: String,
             comment: String): Friend = new
       Friend(
-        id,
+        Option(id),
         fio,
         Option(phoneNumber),
         Option(socialNumber),

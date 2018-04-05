@@ -2,10 +2,11 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc._
+
 
 @Singleton
-class ApplicationController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class ApplicationController @Inject()() extends Controller {
   def index = Action { implicit request =>
     Redirect(routes.FriendsController.list())
   }

@@ -3,12 +3,23 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /                    controllers.ApplicationController.index
+# Default path will just redirect to the friend list
+GET         /                          controllers.ApplicationController.index
 
-GET        /friends             controllers.FriendsController.list
+# Friends list (look at the default values for pagination parameters)
+GET         /friends                   controllers.FriendsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 
-GET        /friend/:id          controllers.FriendsController.show(id: Long)
+# Add friend
+GET         /friends/new               controllers.FriendsController.create
+POST        /friends                   controllers.FriendsController.save
 
-GET        /assets/*file        controllers.Assets.at(path="/public", file)
+# Edit existing friend
+GET         /friends/:id               controllers.FriendsController.edit(id:Long)
+POST        /friends/:id               controllers.FriendsController.update(id:Long)
+
+# Delete a friend
+POST        /friends/:id/delete        controllers.FriendsController.delete(id:Long)
+
+GET         /assets/*file              controllers.Assets.at(path="/public", file)
 
       
