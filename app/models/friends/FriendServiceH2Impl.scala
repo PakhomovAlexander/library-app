@@ -17,12 +17,12 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
   private val simple = {
     get[Option[Long]]("friend.id") ~
       get[String]("friend.fio") ~
-      get[Option[String]]("friend.phoneNumber") ~
-      get[Option[String]]("friend.socialNumber") ~
+      get[Option[String]]("friend.phone_number") ~
+      get[Option[String]]("friend.social_number") ~
       get[Option[String]]("friend.email") ~
       get[Option[String]]("friend.comment") map {
-      case id ~ fio ~ phoneNumber ~ socialNumber ~ email ~ comment =>
-        Friend(id, fio, phoneNumber, socialNumber, email, comment)
+      case id ~ fio ~ phone_number ~ social_number ~ email ~ comment =>
+        Friend(id, fio, phone_number, social_number, email, comment)
     }
   }
 
@@ -97,15 +97,15 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
       SQL(
         """
           update friend
-          set fio = {fio}, phoneNumber = {phoneNumber},
-            socialNumber = {socialNumber}, email = {email}, comment = {comment}
+          set fio = {fio}, phone_number = {phone_number},
+            social_number = {social_number}, email = {email}, comment = {comment}
           where id = {id}
         """
       ).on(
         'id -> id,
         'fio -> friend.fio,
-        'phoneNumber -> friend.phoneNumber,
-        'socialNumber -> friend.socialNumber,
+        'phone_number -> friend.phone_number,
+        'social_number -> friend.social_number,
         'email -> friend.email,
         'comment -> friend.comment
       ).executeUpdate()
@@ -123,13 +123,13 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
         """
           insert into friend values (
             (select next value for friend_seq),
-            {fio}, {phoneNumber}, {socialNumber}, {email}, {comment}
+            {fio}, {phone_number}, {social_number}, {email}, {comment}
           )
         """
       ).on(
         'fio -> friend.fio,
-        'phoneNumber -> friend.phoneNumber,
-        'socialNumber -> friend.socialNumber,
+        'phone_number -> friend.phone_number,
+        'social_number -> friend.social_number,
         'email -> friend.email,
         'comment -> friend.comment
       ).executeUpdate()

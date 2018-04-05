@@ -7,8 +7,8 @@ set ignorecase true;
 create table friend (
   id                        bigint not null,
   fio                       varchar(255) not null,
-  phoneNumber               varchar(255),
-  socialNumber              varchar(255),
+  phone_number              varchar(255),
+  social_number             varchar(255),
   email                     varchar(255),
   comment                   varchar(255),
 

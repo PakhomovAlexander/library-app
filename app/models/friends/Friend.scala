@@ -2,23 +2,23 @@ package models.friends
 
 case class Friend(id: Option[Long],
                   fio: String,
-                  phoneNumber: Option[String],
-                  socialNumber: Option[String],
+                  phone_number: Option[String],
+                  social_number: Option[String],
                   email: Option[String],
                   comment: Option[String])
 
 object Friend {
   def apply(id: Long,
             fio: String,
-            phoneNumber: String,
-            socialNumber: String,
+            phone_number: String,
+            social_number: String,
             email: String,
             comment: String): Friend = new
       Friend(
         Option(id),
         fio,
-        Option(phoneNumber),
-        Option(socialNumber),
+        Option(phone_number),
+        Option(social_number),
         Option(email),
         Option(comment)
       )

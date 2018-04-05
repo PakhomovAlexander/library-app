@@ -8,8 +8,8 @@ import models.friends.Friend
 
 case class Borrowing(book: Book,
                      friend: Friend,
-                     borrowDate: Date,
-                     isLost: Option[Boolean],
-                     isDamaged: Option[Boolean],
-                     returnDate: Option[Date],
+                     borrow_date: Date,
+                     is_lost: Option[Boolean],
+                     is_damaged: Option[Boolean],
+                     return_date: Option[Date],
                      comment: Option[String])

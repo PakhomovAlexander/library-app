@@ -61,12 +61,12 @@
             <tr>
                 <td><a href="@routes.FriendsController.edit(friend.id.get)">@friend.fio</a></td>
                 <td>
-                @friend.phoneNumber.getOrElse {
+                @friend.phone_number.getOrElse {
                     <em>-</em>
                 }
                 </td>
                 <td>
-                @friend.socialNumber.getOrElse {
+                @friend.social_number.getOrElse {
                     <em>-</em>
                 }
                 </td>
@@ -114,7 +114,7 @@
 
     }.getOrElse {
         <div class="well">
-            <em>Пусто</em>
+            <em>Nothing to display</em>
         </div>
     }
 }

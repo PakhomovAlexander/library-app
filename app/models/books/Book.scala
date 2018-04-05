@@ -8,9 +8,9 @@ import models.publishingHouses.PublishingHouse
 case class Book(id: Long,
                 name: String,
                 author: String,
-                pubYear: Option[Date],
-                pubAuthor: Option[String],
+                pub_year: Option[Date],
+                pub_author: Option[String],
                 translator: Option[String],
                 comment: Option[String],
-                pubHouseName: Option[PublishingHouse],
+                pub_house: Option[PublishingHouse],
                 genre: Option[Genre])
