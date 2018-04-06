@@ -70,6 +70,11 @@ insert into borrowing(id_book, id_friend, borrow_date, is_lost, is_damaged, retu
   2, 4, "01-01-2016",null, null, null, null);
 
 
+insert into book_genre (id_book, id_genre) values (1, 1);
+insert into book_genre (id_book, id_genre) values (1, 5);
+insert into book_genre (id_book, id_genre) values (2, 5);
+
+
 
 # --- !Downs
 

@@ -49,6 +49,14 @@ create table book (
 );
 
 
+create table book_genre (
+  id_book           bigint not null,
+  id_genre          bigint not null,
+
+  constraint pk_book_genre primary key (id_book, id_genre)
+);
+
+
 create table borrowing (
   id_book           bigint not null,
   id_friend         bigint not null,
@@ -80,6 +88,7 @@ drop table if exists genre;
 drop table if exists friend_seq;
 drop table if exists book_seq;
 drop table if exists borrowing_seq;
+drop table if exists book_genre;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
