@@ -1,9 +1,9 @@
-package models.borrowing
+package services.borrowing
+
 import java.util.Date
 import javax.inject.Singleton
 
-import models.books.Book
-import models.friends.Friend
+import models.{Book, Friend}
 
 @Singleton
 class BorrowingServiceH2Impl extends BorrowingService {

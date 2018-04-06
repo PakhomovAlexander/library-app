@@ -1,10 +1,10 @@
-package models.friends
+package services.friends
 
 import javax.inject.{Inject, Singleton}
 
-import anorm.{SQL, ~}
 import anorm.SqlParser.{get, scalar}
-import models.Page
+import anorm.{SQL, ~}
+import models.{Friend, Page}
 import play.api.db.DBApi
 
 @Singleton

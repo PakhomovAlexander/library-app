@@ -1,7 +1,8 @@
-package models.books
+package services.books
+
 import javax.inject.Singleton
 
-import models.Page
+import models.{Book, Page}
 
 @Singleton
 class BookServiceH2Impl extends BookService {

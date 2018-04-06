@@ -1,9 +1,6 @@
-package models.books
+package models
 
 import java.util.Date
-
-import models.genres.Genre
-import models.publishingHouses.PublishingHouse
 
 case class Book(id: Long,
                 name: String,

@@ -1,10 +1,6 @@
-package models.borrowing
-
+package models
 
 import java.util.Date
-
-import models.books.Book
-import models.friends.Friend
 
 case class Borrowing(book: Book,
                      friend: Friend,

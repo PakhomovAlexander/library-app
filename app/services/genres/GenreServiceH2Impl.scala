@@ -1,8 +1,8 @@
-package models.genres
+package services.genres
 
 import javax.inject.Singleton
 
-import models.Page
+import models.{Genre, Page}
 
 @Singleton
 class GenreServiceH2Impl extends GenreService {

@@ -2,11 +2,12 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.friends.{Friend, FriendService}
+import models.Friend
 import play.api.data.Forms._
 import play.api.data._
 import play.api.i18n._
 import play.api.mvc._
+import services.friends.FriendService
 import views._
 
 

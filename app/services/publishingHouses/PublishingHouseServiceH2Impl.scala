@@ -1,7 +1,8 @@
-package models.publishingHouses
+package services.publishingHouses
+
 import javax.inject.Singleton
 
-import models.Page
+import models.{Page, PublishingHouse}
 
 @Singleton
 class PublishingHouseServiceH2Impl extends PublishingHouseService {
