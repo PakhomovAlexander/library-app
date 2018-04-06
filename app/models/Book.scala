@@ -10,4 +10,4 @@ case class Book(id: Long,
                 translator: Option[String],
                 comment: Option[String],
                 pub_house: Option[PublishingHouse],
-                genre: Option[Genre])
+                genres: List[Genre])

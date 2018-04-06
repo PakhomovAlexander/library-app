@@ -53,7 +53,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * @param orderBy  Friend property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[Friend] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "fio", filter: String = "%"): Page[Friend] = {
 
     val offset = pageSize * page
 
@@ -62,13 +62,14 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
       val friends = SQL(
         """
           select * from friend
-          where fio like {filter}
+          where {filterBy} like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """
       ).on(
         'pageSize -> pageSize,
         'offset -> offset,
+        'filterBy -> filterBy,
         'filter -> filter,
         'orderBy -> orderBy
       ).as(simple *)
@@ -76,9 +77,10 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
       val totalRows = SQL(
         """
           select count(*) from friend
-          where fio like {filter}
+          where {filterBy} like {filter}
         """
       ).on(
+        'filterBy -> filterBy,
         'filter -> filter
       ).as(scalar[Long].single)
 
