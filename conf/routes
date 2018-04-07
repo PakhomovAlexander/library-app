@@ -3,14 +3,23 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
-# An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
-# An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
+# Default path will just redirect to the friend list
+GET         /                          controllers.ApplicationController.index
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+# Friends list (look at the default values for pagination parameters)
+GET         /friends                   controllers.FriendsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add friend
+GET         /friends/new               controllers.FriendsController.create
+POST        /friends                   controllers.FriendsController.save
+
+# Edit existing friend
+GET         /friends/:id               controllers.FriendsController.edit(id:Long)
+POST        /friends/:id               controllers.FriendsController.update(id:Long)
+
+# Delete a friend
+POST        /friends/:id/delete        controllers.FriendsController.delete(id:Long)
+
+GET         /assets/*file              controllers.Assets.at(path="/public", file)
 
       
