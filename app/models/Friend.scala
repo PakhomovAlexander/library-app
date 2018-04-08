@@ -1,4 +1,4 @@
-package models.friends
+package models
 
 case class Friend(id: Option[Long],
                   fio: String,

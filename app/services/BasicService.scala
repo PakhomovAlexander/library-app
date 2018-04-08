@@ -1,4 +1,4 @@
-package models.services
+package services
 
 trait BasicService[T] {
   def findAll(): List[T]

@@ -1,5 +1,5 @@
 import com.google.inject.AbstractModule
-import models.friends.{FriendService, FriendServiceH2Impl}
+import services.friends.{FriendService, FriendServiceH2Impl}
 
 class Module extends AbstractModule {
   override def configure() = {

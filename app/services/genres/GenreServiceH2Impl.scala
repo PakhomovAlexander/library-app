@@ -1,11 +1,11 @@
-package models.genres
+package services.genres
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
-import models.Page
+import models.{Genre, Page}
 
 @Singleton
-class GenreServiceH2Impl extends GenreService {
+class GenreServiceH2Impl @Inject()  extends GenreService {
   override def findAll(): List[Genre] = ???
 
   override def findById(id: Long): Option[Genre] = ???
@@ -16,5 +16,5 @@ class GenreServiceH2Impl extends GenreService {
 
   override def delete(id: Long): Unit = ???
 
-  override def list(page: Int, pageSize: Int, orderBy: Int, filter: String): Page[Genre] = ???
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String = "id", filter: String): Page[Genre] = ???
 }
