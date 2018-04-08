@@ -7,12 +7,15 @@ import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
 import models._
 import play.api.db.DBApi
+import services.genres.{GenreService, GenreServiceH2Impl}
 import services.publishingHouses.PublishingHouseService
 
 
 @Singleton
-class BookServiceH2Impl @Inject() (dbapi: DBApi, publishingHouseService: PublishingHouseService)
-extends BookService {
+class BookServiceH2Impl @Inject()(dbapi: DBApi,
+                                  publishingHouseService: PublishingHouseService,
+                                  genreService: GenreServiceH2Impl)
+  extends BookService {
 
   private val db = dbapi.database("default")
 
@@ -29,7 +32,7 @@ extends BookService {
       get[Option[String]]("book.comment") ~
       get[Option[Long]]("book.pub_house") map {
       case id ~ name ~ author ~ pub_year ~ pic_author ~ translator ~ comment ~ pub_house =>
-        Book(id.get, name, author, pub_year, pic_author, translator, comment, pubHouse(pub_house.orNull), Nil)
+        Book(id.get, name, author, pub_year, pic_author, translator, comment, pubHouse(pub_house.getOrElse(-99)), Nil)
     }
   }
 
@@ -60,14 +63,8 @@ extends BookService {
   }
 
   private def bookWithGenres(book: Book) = {
-    book.copy(genres = genres(book.id))
+    book.copy(genres = genreService.genres(book.id))
   }
-
-  private def genres(id: Long): List[Genre] = {
-    Nil
-  }
-
-  private def pubHouse(id: Long) = publishingHouseService.findById(id)
 
   /**
     * Return a page of Books.
@@ -113,7 +110,7 @@ extends BookService {
   }
 
   private def booksWithGenres(books: List[Book]) = {
-    val gnrs = books.map { book => genres(book.id) }
+    val gnrs = books.map { book => genreService.genres(book.id) }
     books.zip(gnrs)
       .map {
         case (book, g: List[Genre]) =>
@@ -215,4 +212,6 @@ extends BookService {
 
     }
   }
+
+  private def pubHouse(id: Long) = publishingHouseService.findById(id)
 }
