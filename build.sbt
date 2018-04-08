@@ -16,5 +16,4 @@ libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.0"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.2.1"
 
-
       
