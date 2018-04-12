@@ -1,3 +1,4 @@
+@import services.Page
 @(currentPage: Page[Friend], currentOrderBy: Int, currentFilter: String)(
         implicit flash: play.api.mvc.Flash, messages: Messages)
 
@@ -24,7 +25,7 @@
     </th>
 }
 
-@main("All friends") {
+@main("All friend") {
 
     <h1>Friends: @currentPage.total</h1>
 
@@ -45,7 +46,7 @@
 
     @Option(currentPage.items).filterNot(_.isEmpty).map { friends =>
 
-    <table class="friends zebra-striped">
+    <table class="friend zebra-striped">
         <thead>
             <tr>
                 @header(2, "FIO")

@@ -34,40 +34,40 @@ insert into friend (id, fio, phone_number, social_number, email, comment) values
   15, 'Tes er ter terstova', '8-800-555-33-44', 'Testichk@', 'Test@icloud.com', 'Test comment');
 
 
-insert into genre (id, name, id_parent_genre) values (1, "Classic", null);
-insert into genre (id, name, id_parent_genre) values (2, "Classic1", null);
-insert into genre (id, name, id_parent_genre) values (3, "Classic2", null);
-insert into genre (id, name, id_parent_genre) values (4, "Classic3", null);
-insert into genre (id, name, id_parent_genre) values (5, "Fastastic", null);
-insert into genre (id, name, id_parent_genre) values (6, "Fastastic1", null);
-insert into genre (id, name, id_parent_genre) values (7, "Fastastic2", null);
+insert into genre (id, name, id_parent_genre) values (1, 'Classic', null);
+insert into genre (id, name, id_parent_genre) values (2, 'Classic1', null);
+insert into genre (id, name, id_parent_genre) values (3, 'Classic2', null);
+insert into genre (id, name, id_parent_genre) values (4, 'Classic3', null);
+insert into genre (id, name, id_parent_genre) values (5, 'Fastastic', null);
+insert into genre (id, name, id_parent_genre) values (6, 'Fastastic1', null);
+insert into genre (id, name, id_parent_genre) values (7, 'Fastastic2', null);
 
-insert into publishing_house(id, name) values (1, "Piter house");
-insert into publishing_house(id, name) values (2, "Moscow house");
-insert into publishing_house(id, name) values (3, "Lipect house");
-insert into publishing_house(id, name) values (4, "Voronezh house");
-insert into publishing_house(id, name) values (5, "London house");
-insert into publishing_house(id, name) values (6, "Warsaw house");
+insert into publishing_house(id, name) values (1, 'Piter house');
+insert into publishing_house(id, name) values (2, 'Moscow house');
+insert into publishing_house(id, name) values (3, 'Lipect house');
+insert into publishing_house(id, name) values (4, 'Voronezh house');
+insert into publishing_house(id, name) values (5, 'London house');
+insert into publishing_house(id, name) values (6, 'Warsaw house');
 
 
-insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-    1, "Effective java", "01-01-1997", null, null, null, null, null);
-insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-  2, "Effective java1", "01-01-1998", null, null, null, null, null);
-insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-  3, "Effective java2", "01-01-1999", null, null, null, null, null);
-insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-  4, "Effective java3", "01-01-1991", null, null, null, null, null);
-insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-  5, "Effective java4", "01-01-1992", null, null, null, null, null);
+insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+    1, 'Effective java', parsedatetime('01-01-1997', 'dd-MM-yyyy'), null, null, 'Joshua Bloch', null, null);
+insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+  2, 'Effective java1', parsedatetime( '01-01-1998', 'dd-MM-yyyy'), null, null, 'Joshua Bloch', null, null);
+insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+  3, 'Effective java2', parsedatetime('01-01-1999', 'dd-MM-yyyy'), null, null, 'Joshua Bloch', null, null);
+insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+  4, 'Effective java3', parsedatetime( '01-01-1991', 'dd-MM-yyyy'), null, null, 'Joshua Bloch', null, null);
+insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+  5, 'Effective java4', parsedatetime( '01-01-1992', 'dd-MM-yyyy'), null, null, 'Joshua Bloch', null, null);
 
 
 insert into borrowing(id_book, id_friend, borrow_date, is_lost, is_damaged, return_date, comment) values (
-    1, 1, "01-01-2017",null, null, null, null);
+    1, 1, parsedatetime( '01-01-2017', 'dd-MM-yyyy'), null, null, null, null);
 insert into borrowing(id_book, id_friend, borrow_date, is_lost, is_damaged, return_date, comment) values (
-  3, 2, "01-01-2018",null, null, null, null);
+  3, 2, parsedatetime( '01-01-2018', 'dd-MM-yyyy'), null, null, null, null);
 insert into borrowing(id_book, id_friend, borrow_date, is_lost, is_damaged, return_date, comment) values (
-  2, 4, "01-01-2016",null, null, null, null);
+  2, 4, parsedatetime( '01-01-2016', 'dd-MM-yyyy'), null, null, null, null);
 
 
 insert into book_genre (id_book, id_genre) values (1, 1);

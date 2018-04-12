@@ -4,8 +4,9 @@ import javax.inject.{Inject, Singleton}
 
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
-import models.{Genre, Page}
+import models.Genre
 import play.api.db.DBApi
+import services.Page
 
 @Singleton
 class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
@@ -73,7 +74,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
 
       val totalRows = SQL(
         """
-          select count(*) from genres
+          select count(*) from genre
           where {filterBy} like {filter}
         """
       ).on(

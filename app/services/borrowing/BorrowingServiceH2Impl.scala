@@ -1,5 +1,6 @@
 package services.borrowing
 
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.{Inject, Singleton}
 
@@ -7,6 +8,7 @@ import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
 import models._
 import play.api.db.DBApi
+import services.Page
 import services.books.BookService
 import services.friends.FriendService
 
@@ -58,6 +60,23 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
       .on('filterBy -> filterBy, 'filter -> filter)
       .as(simple *)
   }
+  /**
+    * Return a list of borrowings find by primary key
+    * @param id_friend part of pk
+    * @param id_book part of pk
+    * @param date part of pk
+    * @return
+    */
+  override def findByPk(id_friend: Long, id_book: Long, date: LocalDate): Option[Borrowing] =
+    db.withConnection { implicit connection =>
+      SQL("select * from borrowing where id_friend = {id_friend} and id_book = {id_book} and borrow_date = {date}")
+        .on('id_friend -> id_friend,
+          'id_book -> id_book,
+          'date -> date.toString
+        )
+        .as(simple singleOpt)
+    }
+
 
   /**
     * Return a page of borrowings.

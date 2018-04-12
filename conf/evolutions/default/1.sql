@@ -38,9 +38,9 @@ create table book (
   id                bigint not null,
   name              varchar(255) not null,
   pub_year          varchar(255),
-  pic_autor         varchar(255),
+  pic_author         varchar(255),
   translator        varchar(255),
-  author            varchar(255),
+  author            varchar(255) not null,
   comment           varchar(255),
   id_pub_house      bigint,
 

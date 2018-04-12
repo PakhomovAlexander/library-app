@@ -4,8 +4,9 @@ import javax.inject.{Inject, Singleton}
 
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
-import models.{Friend, Page}
+import models.Friend
 import play.api.db.DBApi
+import services.Page
 
 @Singleton
 class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
@@ -49,7 +50,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * Return a page of Friends.
     *
     * @param page     Page to display
-    * @param pageSize Number of friends per page
+    * @param pageSize Number of friend per page
     * @param orderBy  Friend property used for sorting
     * @param filter   Filter applied on the name column
     */
