@@ -16,7 +16,10 @@ case class Book(id: Long,
                 pub_house: Option[PublishingHouse],
                 genres: List[Genre])
 
-object Book {
+object Book extends Entity {
+
+  override val collectionName: String = "books"
+
   def apply(id: Long,
             name: String,
             author: String,

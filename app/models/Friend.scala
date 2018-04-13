@@ -7,7 +7,10 @@ case class Friend(id: Option[Long],
                   email: Option[String],
                   comment: Option[String])
 
-object Friend {
+object Friend extends Entity {
+
+  override val collectionName = "friends"
+
   def apply(id: Long,
             fio: String,
             phone_number: String,

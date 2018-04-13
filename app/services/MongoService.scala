@@ -1,24 +1,19 @@
-package services.friends
+package services
 
 import models.Friend
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
-import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
-import org.mongodb.scala.bson.codecs.Macros._
-import org.mongodb.scala.model.Filters._
-import org.mongodb.scala.model.Sorts._
 import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
-import services.MongoHelper._
-import services.Page
+import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+import org.mongodb.scala.model.Filters.{equal, regex}
+import org.mongodb.scala.model.Sorts.ascending
 
+abstract class MongoService[T](database: MongoDatabase) extends BasicService[T] with PageService[T] {
 
-@Singleton
-class FriendServiceMongoImpl extends FriendService {
-
-  private val codecRegistry = fromRegistries(fromProviders(classOf[Friend]), DEFAULT_CODEC_REGISTRY)
+  private val codecRegistry = fromRegistries(fromProviders(classOf[T]), DEFAULT_CODEC_REGISTRY)
 
   val client: MongoClient = MongoClient()
-  val database: MongoDatabase = client.getDatabase("library").withCodecRegistry(codecRegistry)
-  val collection: MongoCollection[Friend] = database.getCollection("friends")
+  //val database: MongoDatabase = client.getDatabase("library").withCodecRegistry(codecRegistry)
+  val collection: MongoCollection[T] = database.getCollection("friends")
 
   /**
     * Return a page of Friends.
