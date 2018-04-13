@@ -37,11 +37,11 @@ class FriendsController @Inject()(friendService: FriendService,
   // ------ Actions
 
   /**
-    * Display the paginated list of computers.
+    * Display the paginated list of friend.
     *
     * @param page    Current page number (starts from 0)
     * @param orderBy Column to be sorted
-    * @param filter  Filter applied on computer names
+    * @param filter  Filter applied on friend names
     */
   def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
     Ok(html.friends.list(
@@ -97,7 +97,7 @@ class FriendsController @Inject()(friendService: FriendService,
   }
 
   /**
-    * Handle computer deletion.
+    * Handle friend deletion.
     */
   def delete(id: Long) = Action { implicit request =>
     friendService.delete(id)

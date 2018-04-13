@@ -4,8 +4,9 @@ import javax.inject.{Inject, Singleton}
 
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
-import models.{Page, PublishingHouse}
+import models.PublishingHouse
 import play.api.db.DBApi
+import services.Page
 
 @Singleton
 class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHouseService {

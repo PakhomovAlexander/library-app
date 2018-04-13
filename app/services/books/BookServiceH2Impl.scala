@@ -1,20 +1,28 @@
 package services.books
-
-import java.util.Date
+import java.text.SimpleDateFormat
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
 import models._
 import play.api.db.DBApi
+import services.Page
+import services.genres.{GenreService, GenreServiceH2Impl}
 import services.publishingHouses.PublishingHouseService
+  import java.time.format.DateTimeFormatter
 
 
 @Singleton
-class BookServiceH2Impl @Inject() (dbapi: DBApi, publishingHouseService: PublishingHouseService)
-extends BookService {
+class BookServiceH2Impl @Inject()(dbapi: DBApi,
+                                  publishingHouseService: PublishingHouseService,
+                                  genreService: GenreServiceH2Impl)
+  extends BookService {
 
   private val db = dbapi.database("default")
+
+
+  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s")
 
   /**
     * Parse a Book from a ResultSet
@@ -23,13 +31,23 @@ extends BookService {
     get[Option[Long]]("book.id") ~
       get[String]("book.name") ~
       get[String]("book.author") ~
-      get[Option[Date]]("book.pub_year") ~
+      get[Option[String]]("book.pub_year") ~
       get[Option[String]]("book.pic_author") ~
       get[Option[String]]("book.translator") ~
       get[Option[String]]("book.comment") ~
-      get[Option[Long]]("book.pub_house") map {
-      case id ~ name ~ author ~ pub_year ~ pic_author ~ translator ~ comment ~ pub_house =>
-        Book(id.get, name, author, pub_year, pic_author, translator, comment, pubHouse(pub_house.orNull), Nil)
+      get[Option[Long]]("book.id_pub_house") map {
+      case id ~ name ~ author ~ pub_year ~ pic_author ~ translator ~ comment ~ id_pub_house =>
+        new Book(
+          id.get,
+          name,
+          author,
+          Option(LocalDate.parse(pub_year.orNull, formatter)),
+          pic_author,
+          translator,
+          comment,
+          pubHouse(id_pub_house.getOrElse(-99)),
+          Nil
+        )
     }
   }
 
@@ -60,20 +78,14 @@ extends BookService {
   }
 
   private def bookWithGenres(book: Book) = {
-    book.copy(genres = genres(book.id))
+    book.copy(genres = genreService.genres(book.id))
   }
-
-  private def genres(id: Long): List[Genre] = {
-    Nil
-  }
-
-  private def pubHouse(id: Long) = publishingHouseService.findById(id)
 
   /**
     * Return a page of Books.
     *
     * @param page     Page to display
-    * @param pageSize Number of friends per page
+    * @param pageSize Number of friend per page
     * @param orderBy  Book property used for sorting
     * @param filter   Filter applied on the name column
     */
@@ -108,12 +120,14 @@ extends BookService {
         'filter -> filter
       ).as(scalar[Long].single)
 
-      Page(booksWithGenres(books), page, offset, totalRows)
+//      Page(booksWithGenres(books), page, offset, totalRows)
+      println(s">>>>>>> SIZE:  ${books.size}")
+      Page(books, page, offset, totalRows)
     }
   }
 
   private def booksWithGenres(books: List[Book]) = {
-    val gnrs = books.map { book => genres(book.id) }
+    val gnrs = books.map { book => genreService.genres(book.id) }
     books.zip(gnrs)
       .map {
         case (book, g: List[Genre]) =>
@@ -139,7 +153,7 @@ extends BookService {
       ).on(
         'name -> book.name,
         'author -> book.author,
-        'pub_year -> book.pub_year.orNull,
+        'pub_year -> book.pub_year.toString,
         'pub_author -> book.pub_author.orNull,
         'translator -> book.translator.orNull,
         'comment -> book.comment.orNull,
@@ -185,7 +199,7 @@ extends BookService {
       ).on(
         'id -> book.id,
         'name -> book.name,
-        'pub_year -> book.pub_year.orNull,
+        'pub_year -> book.pub_year.toString,
         'pic_autor -> book.pub_author.orNull,
         'translator -> book.translator.orNull,
         'author -> book.author,
@@ -215,4 +229,6 @@ extends BookService {
 
     }
   }
+
+  private def pubHouse(id: Long) = publishingHouseService.findById(id)
 }

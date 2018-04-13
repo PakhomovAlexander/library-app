@@ -1,7 +1,5 @@
 package services
 
-import models.Page
-
 /**
   * Trait provide pagination behavior
   * @tparam T  Entity type

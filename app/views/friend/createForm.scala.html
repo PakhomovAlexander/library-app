@@ -1,12 +1,12 @@
 @(friendForm: Form[Friend])(implicit messages: Messages)
 
-    @import b3.vertical.fieldConstructor
+    @import b3.horizontal.fieldConstructor
 
     @main("Add a computer") {
 
     <h1>Add a friend</h1>
 
-    @b3.form(routes.FriendsController.save()) {
+    @b3.horizontal.form(routes.FriendsController.save(), "col-md-2", "col-md-10") { implicit hcf =>
 
         <fieldset>
             @b3.text(friendForm("FIO"), '_label -> "FIO", '_help -> "")

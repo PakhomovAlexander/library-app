@@ -4,22 +4,78 @@
 # ~~~~
 
 # Default path will just redirect to the friend list
-GET         /                          controllers.ApplicationController.index
+GET         /                                                   controllers.ApplicationController.index
 
 # Friends list (look at the default values for pagination parameters)
-GET         /friends                   controllers.FriendsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+GET         /friends                                            controllers.FriendsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 
 # Add friend
-GET         /friends/new               controllers.FriendsController.create
-POST        /friends                   controllers.FriendsController.save
+GET         /friends/new                                        controllers.FriendsController.create
+POST        /friends                                            controllers.FriendsController.save
 
 # Edit existing friend
-GET         /friends/:id               controllers.FriendsController.edit(id:Long)
-POST        /friends/:id               controllers.FriendsController.update(id:Long)
+GET         /friends/:id                                        controllers.FriendsController.edit(id:Long)
+POST        /friends/:id                                        controllers.FriendsController.update(id:Long)
 
 # Delete a friend
-POST        /friends/:id/delete        controllers.FriendsController.delete(id:Long)
+POST        /friends/:id/delete                                 controllers.FriendsController.delete(id:Long)
 
-GET         /assets/*file              controllers.Assets.at(path="/public", file)
+# Publishing house list (look at the default values for pagination parameters)
+GET         /pubHouses                                          controllers.PublishingHouseController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add Publishing house
+GET         /pubHouses/new                                      controllers.PublishingHouseController.create
+POST        /pubHouses                                          controllers.PublishingHouseController.save
+
+# Edit existing Publishing house
+GET         /pubHouses/:id                                      controllers.PublishingHouseController.edit(id:Long)
+POST        /pubHouses/:id                                      controllers.PublishingHouseController.update(id:Long)
+
+# Delete a Publishing house
+POST        /pubHouses/:id/delete                               controllers.PublishingHouseController.delete(id:Long)
+
+# Genre list (look at the default values for pagination parameters)
+GET         /genres                                             controllers.GenreController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add Genre
+GET         /genres/new                                         controllers.GenreController.create
+POST        /genres                                             controllers.GenreController.save
+
+# Edit existing Genre
+GET         /genres/:id                                         controllers.GenreController.edit(id:Long)
+POST        /genres/:id                                         controllers.GenreController.update(id:Long)
+
+# Delete a Genre
+POST        /genres/:id/delete                                  controllers.GenreController.delete(id:Long)
+
+# Book list (look at the default values for pagination parameters)
+GET         /books                                              controllers.BookController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add Book
+GET         /books/new                                          controllers.BookController.create
+POST        /books                                              controllers.BookController.save
+
+# Edit existing Book
+GET         /books/:id                                          controllers.BookController.edit(id:Long)
+POST        /books/:id                                          controllers.BookController.update(id:Long)
+
+# Delete a Book
+POST        /books/:id/delete                                   controllers.BookController.delete(id:Long)
+
+# Borrowing list (look at the default values for pagination parameters)
+GET         /boorowings                                         controllers.BorrowingController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Borrow
+GET         /boorowings/new                                     controllers.BorrowingController.create
+POST        /boorowings                                         controllers.BorrowingController.save
+
+# Edit existing Borrowing
+GET         /boorowings/:id_friend/:id_book/:date               controllers.BorrowingController.edit(id_friend:Long, id_book: Long, date: String)
+POST        /boorowings/:id_friend/:id_book/:date               controllers.BorrowingController.update(id_friend:Long, id_book: Long, date: String)
+
+# Give book back
+POST        /boorowings/:id_friend/:id_book/:date/delete        controllers.BorrowingController.delete(id_friend:Long, id_book: Long, date: String)
+
+GET         /assets/*file                                       controllers.Assets.at(path="/public", file)
 
       
