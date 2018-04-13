@@ -87,7 +87,7 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     * @param filter   Filter applied on the filterBy column
     * @param filterBy Column to be filtered
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String,
                     filterBy: String = "name", filter: String = "%"): Page[Borrowing] = {
 
     val offset = pageSize * page

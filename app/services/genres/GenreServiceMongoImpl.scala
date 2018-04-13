@@ -84,4 +84,13 @@ class GenreServiceMongoImpl extends GenreService {
   override def delete(id: Long): Unit = {
     collection.deleteOne(equal("_id", id)).results()
   }
+
+  /**
+    * Returns Lins of book's genres
+    * @param bookId The Bok id
+    * @return
+    */
+  def genres(bookId: Long): List[Genre] = {
+    collection.find(equal("_id", bookId)).first().results().toList
+  }
 }
