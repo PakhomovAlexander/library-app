@@ -4,9 +4,7 @@ import services.genres.GenreService
 
 case class Genre(id: Long, name: String, parent_genre: Option[Genre])
 
-object Genre extends Entity {
-
-  override val collectionName: String = "genres"
+object Genre {
 
   def apply(id: Long, name: String, parent_id_opt: Option[Long])(
     implicit genreService: GenreService): Genre = {

@@ -14,9 +14,7 @@ case class Borrowing(book: Book,
                      return_date: Option[Date],
                      comment: Option[String])
 
-object Borrowing extends Entity {
-
-  override val collectionName: String = "borrowings"
+object Borrowing {
 
   def apply(id_book: Long,
             id_friend: Long,

@@ -2,8 +2,8 @@ package models
 
 case class PublishingHouse(id: Long, name: String)
 
-object PublishingHouse extends Entity {
+object PublishingHouse {
 
-  override val collectionName: String = "publishingHouses"
+  def apply(id: Long, name: String): PublishingHouse = new PublishingHouse(id, name)
 
 }
