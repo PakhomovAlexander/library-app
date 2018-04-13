@@ -1,14 +1,14 @@
 package services.publishingHouses
 
-import models.{Friend, PublishingHouse}
+import models.PublishingHouse
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.{equal, regex}
 import org.mongodb.scala.model.Sorts.ascending
 import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
-import services.Page
 import services.MongoHelper._
+import services.Page
 
 class PublishingHouseMongoImpl extends PublishingHouseService {
 
