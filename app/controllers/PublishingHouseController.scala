@@ -2,9 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.PublishingHouse
-import play.api.data.Form
-import play.api.data.Forms.{ignored, mapping, _}
+import models.PublishingHouse.publishingHouseForm
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller, Result}
 import services.publishingHouses.PublishingHouseService
@@ -17,16 +15,6 @@ class PublishingHouseController @Inject()(publishingHouseService: PublishingHous
     * This result directly redirect to the application home.
     */
   val Home: Result = Redirect(routes.PublishingHouseController.list())
-
-  /**
-    * Describe the publishing house form (used in both edit and create screens).
-    */
-  val publishingHouseForm = Form(
-    mapping(
-      "id" -> ignored[Long](-99),
-      "name" -> nonEmptyText
-    )(PublishingHouse.apply)(PublishingHouse.unapply)
-  )
 
   // ------ Actions
 

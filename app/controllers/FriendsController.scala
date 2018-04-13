@@ -2,9 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.Friend
-import play.api.data.Forms._
-import play.api.data._
+import models.Friend.friendForm
 import play.api.i18n._
 import play.api.mvc._
 import services.friends.FriendService
@@ -20,20 +18,6 @@ class FriendsController @Inject()(friendService: FriendService,
     */
   val Home: Result = Redirect(routes.FriendsController.list())
 
-  /**
-    * Describe the friend form (used in both edit and create screens).
-    */
-  val friendForm = Form(
-    mapping(
-      "id" -> ignored(None:Option[Long]),
-      "FIO" -> nonEmptyText,
-      "Phone number" -> optional(text),
-      "Social networks" -> optional(text),
-      "Email" -> optional(text),
-      "Comment" -> optional(text)
-    )(Friend.apply)(Friend.unapply)
-  )
-
   // ------ Actions
 
   /**
@@ -44,7 +28,7 @@ class FriendsController @Inject()(friendService: FriendService,
     * @param filter  Filter applied on friend names
     */
   def list(page: Int, orderBy: Int, filter: String) = Action { implicit request =>
-    Ok(html.friends.list(
+    Ok(html.friend.list(
       friendService.list(page = page, orderBy = orderBy, filter = s"%$filter%"),
       orderBy, filter
     ))
@@ -57,7 +41,7 @@ class FriendsController @Inject()(friendService: FriendService,
     */
   def edit(id: Long) = Action { implicit request =>
     friendService.findById(id).map { friend =>
-      Ok(html.friends.editForm(id, friendForm.fill(friend)))
+      Ok(html.friend.editForm(id, friendForm.fill(friend)))
     }.getOrElse(NotFound)
   }
 
@@ -68,7 +52,7 @@ class FriendsController @Inject()(friendService: FriendService,
     */
   def update(id: Long) = Action { implicit request =>
     friendForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.friends.editForm(id, formWithErrors)),
+      formWithErrors => BadRequest(html.friend.editForm(id, formWithErrors)),
       friend => {
         friendService.update(id, friend)
         Home.flashing("success" -> s"Friend ${friend.fio} has been updated")
@@ -80,7 +64,7 @@ class FriendsController @Inject()(friendService: FriendService,
     * Display the 'new friend form'.
     */
   def create = Action { implicit request =>
-    Ok(html.friends.createForm(friendForm))
+    Ok(html.friend.createForm(friendForm))
   }
 
   /**
@@ -88,7 +72,7 @@ class FriendsController @Inject()(friendService: FriendService,
     */
   def save = Action { implicit request =>
     friendForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.friends.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.friend.createForm(formWithErrors)),
       friend => {
         friendService.insert(friend)
         Home.flashing("success" -> s"Friend ${friend.fio} has been created")

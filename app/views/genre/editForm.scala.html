@@ -8,10 +8,14 @@
         <h1>Edit genre</h1>
 
         @b3.form(action = routes.GenreController.update(id)) {
-            <fieldset>
-                @b3.text(genreForm("name"), '_label -> "name", '_help -> "")
-                @b3.text(genreForm("???"), '_label -> "name", '_help -> "")
-            </fieldset>
+            <div class = "row form-row">
+                @b3.text(genreForm("Name"), '_label -> "Name", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.select(genreForm("Parent"), '_label -> "Parent", '_help -> "")
+            </div>
+
             <div class="actions">
                 <input type="submit" value="Save this genre" class="btn primary"> or
                 <a href="@routes.GenreController.list()" class="btn">Close</a>

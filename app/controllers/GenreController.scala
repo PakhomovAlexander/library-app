@@ -2,36 +2,22 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.Genre
-import play.api.data.Forms._
-import play.api.data._
+import models.Genre.genreForm
 import play.api.i18n._
 import play.api.mvc._
-import services.friends.FriendService
 import services.genres.GenreService
 import views._
 
 
 @Singleton
 class GenreController @Inject()(implicit genreService: GenreService,
-                                  val messagesApi: MessagesApi)
+                                val messagesApi: MessagesApi)
   extends Controller with I18nSupport {
   /**
     * This result directly redirect to the application home.
     */
   val Home: Result = Redirect(routes.GenreController.list())
-
-  /**
-    * Describe the genre form (used in both edit and create screens).
-    */
-  val genreForm = Form(
-    mapping(
-      "id" -> ignored[Long](-99L),
-      "name" -> nonEmptyText,
-      "parents" -> optional(longNumber)
-    )(Genre.apply)(Genre.unapplyForm)
-  )
-
+  val form = genreForm(genreService)
   // ------ Actions
 
   /**
@@ -55,7 +41,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     */
   def edit(id: Long) = Action { implicit request =>
     genreService.findById(id).map { genre =>
-      Ok(html.genre.editForm(id, genreForm.fill(genre)))
+      Ok(html.genre.editForm(id, form.fill(genre)))
     }.getOrElse(NotFound)
   }
 
@@ -65,7 +51,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     * @param id Id of the genre to edit
     */
   def update(id: Long) = Action { implicit request =>
-    genreForm.bindFromRequest.fold(
+    form.bindFromRequest.fold(
       formWithErrors => BadRequest(html.genre.editForm(id, formWithErrors)),
       genre => {
         genreService.update(id, genre)
@@ -78,14 +64,14 @@ class GenreController @Inject()(implicit genreService: GenreService,
     * Display the 'new genre form'.
     */
   def create = Action { implicit request =>
-    Ok(html.genre.createForm(genreForm))
+    Ok(html.genre.createForm(form))
   }
 
   /**
     * Handle the 'new genre form' submission.
     */
   def save = Action { implicit request =>
-    genreForm.bindFromRequest.fold(
+    form.bindFromRequest.fold(
       formWithErrors => BadRequest(html.genre.createForm(formWithErrors)),
       genre => {
         genreService.insert(genre)

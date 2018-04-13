@@ -1,20 +1,36 @@
 @(friendForm: Form[Friend])(implicit messages: Messages)
+@import b3.vertical.fieldConstructor
 
-    @import b3.horizontal.fieldConstructor
-
-    @main("Add a computer") {
+    @main("Add a friend") {
 
     <h1>Add a friend</h1>
 
-    @b3.horizontal.form(routes.FriendsController.save(), "col-md-2", "col-md-10") { implicit hcf =>
+    @b3.form(routes.FriendsController.save()) {
 
-        <fieldset>
-            @b3.text(friendForm("FIO"), '_label -> "FIO", '_help -> "")
-            @b3.text(friendForm("Phone number"), '_label -> "Phone number", '_help -> "")
-            @b3.text(friendForm("Social networks"), '_label -> "Social networks", '_help -> "")
-            @b3.email(friendForm("Email"), '_label -> "Email", '_help -> "")
-            @b3.text(friendForm("Comment"), '_label -> "Comment", '_help -> "")
-        </fieldset>
+            <div class = "row form-row">
+            @b3.text( friendForm("FIO"), '_hiddenLabel -> "FIO", '_showIconOnError -> true,
+                '_help -> "it can be one or more words", 'placeholder -> "Ivanov Ivan Ivanovich")
+            </div>
+
+            <div class = "row form-row">
+            @b3.text( friendForm("Phone number"), '_label -> "Phone number", 'placeholder -> "8-800-555-35-35", '_showIconOnError -> true,
+                '_help -> "from 0 to 9 including '-'")
+            </div>
+
+            <div class = "row form-row">
+            @b3.text( friendForm("Social networks"), '_label -> "Social networks", '_showIconOnError -> true,
+                '_help -> "vk, facebook, twitter, ...", 'placeholder -> "https://vk.com/vanvan" )
+            </div>
+
+            <div class = "row form-row">
+            @b3.email( friendForm("Email"), '_label -> "Email", '_help -> "any email adress", '_showIconOnError -> true,
+                '_help -> "vk, facebook, twitter, ...", 'placeholder -> "Ivan@example.com")
+            </div>
+
+            <div class = "row form-row">
+            @b3.text( friendForm("Comment"), '_label -> "Comment", '_help -> "what do you think about this person?", '_showIconOnError -> true,
+                'placeholder -> "he is a good person!")
+            </div>
 
         <div class="actions">
             <input type="submit" value="Create this friend" class="btn primary"> or

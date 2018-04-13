@@ -1,10 +1,28 @@
 package models
 
+import play.api.data.Form
+import play.api.data.Forms.{ignored, longNumber, mapping, optional, _}
 import services.genres.GenreService
 
-case class Genre(id: Long, name: String, parent_genre: Option[Genre])
+case class Genre(id: Long, name: String, parent_genre: Option[Genre]) {
+  override def toString: String = s"$name ${parent_genre.fold("")(genre => s"// $genre")}"
+}
 
 object Genre {
+  /**
+    * Describe the genre form (used in both edit and create screens).
+    */
+  lazy val genreForm: ((GenreService) => Form[Genre]) = (genreService: GenreService) => {
+    implicit val gen: GenreService = genreService
+    Form(
+      mapping(
+        "id" -> ignored[Long](-99L),
+        "Name" -> nonEmptyText,
+        "Parent" -> optional(longNumber)
+      )(Genre.apply)(Genre.unapplyForm)
+    )
+  }
+
   def apply(id: Long, name: String, parent_id_opt: Option[Long])(
     implicit genreService: GenreService): Genre = {
     new Genre(

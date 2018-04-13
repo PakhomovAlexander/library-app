@@ -1,5 +1,8 @@
 package models
 
+import play.api.data.Form
+import play.api.data.Forms._
+
 case class Friend(id: Option[Long],
                   fio: String,
                   phone_number: Option[String],
@@ -8,6 +11,20 @@ case class Friend(id: Option[Long],
                   comment: Option[String])
 
 object Friend {
+  /**
+    * Describe the friend form (used in both edit and create screens).
+    */
+  val friendForm = Form(
+    mapping(
+      "id" -> ignored(None: Option[Long]),
+      "FIO" -> nonEmptyText.verifying("The fio can contain only letters!", fio => isFIO(fio)),
+      "Phone number" -> optional(text).verifying("Phone number should contains 0-9", num => isNumber(num)),
+      "Social networks" -> optional(text),
+      "Email" -> optional(email),
+      "Comment" -> optional(text)
+    )(Friend.apply)(Friend.unapply)
+  )
+
   def apply(id: Long,
             fio: String,
             phone_number: String,
@@ -22,4 +39,10 @@ object Friend {
         Option(email),
         Option(comment)
       )
+
+  private def isNumber(num: Option[String]) = num.fold(true)(
+    n => n.matches("""^([0-9]|-)+$""")
+  )
+
+  private def isFIO(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
 }
