@@ -60,6 +60,10 @@ class BorrowingServiceMongoImpl extends BorrowingService {
 
   }
 
+  /**
+    * Return a list of all borrow actions.
+    *
+    */
   override def findAll(): List[Borrowing] = {
     collection.find().results().toList.map(
       b => Borrowing.apply( b.id_book,
@@ -71,6 +75,12 @@ class BorrowingServiceMongoImpl extends BorrowingService {
         b.comment))
   }
 
+  /**
+    * Return a list of borrowings filtered by some field
+    * @param filterBy The field to be filtered
+    * @param filter The filter condition
+    * @return
+    */
   override def findBy(filterBy: String, filter: String): List[Borrowing] = {
 
     collection.find(equal(filterBy, filter)).results().toList.map(
@@ -84,6 +94,13 @@ class BorrowingServiceMongoImpl extends BorrowingService {
 
   }
 
+  /**
+    * Return a list of borrowings find by primary key
+    * @param id_friend part of pk
+    * @param id_book part of pk
+    * @param date part of pk
+    * @return
+    */
   override def findByPk(id_friend: Long, id_book: Long, date: LocalDate): Option[Borrowing] = {
     val opt = Option(collection.find(and(equal("id_friend", id_friend),
                         equal("id_book", id_book),
@@ -102,6 +119,11 @@ class BorrowingServiceMongoImpl extends BorrowingService {
         opt.get.comment))
   }
 
+  /**
+    * Update a borrowing.
+    *
+    * @param borrowing      The borrowing values.
+    */
   override def update(borrowing: Borrowing): Unit = {
     collection.replaceOne(and(
       equal("id_book", borrowing.book.id),
@@ -117,6 +139,11 @@ class BorrowingServiceMongoImpl extends BorrowingService {
 
   }
 
+  /**
+    * Insert a new Publishing house.
+    *
+    * @param borrowing The borrow values.
+    */
   override def borrow(borrowing: Borrowing): Unit = {
 
     val borrowingMongo = BorrowingMongo(
@@ -131,6 +158,11 @@ class BorrowingServiceMongoImpl extends BorrowingService {
     collection.insertOne(borrowingMongo).results()
   }
 
+  /**
+    * Delete a borrowing.
+    *
+    * @param borrowing borrowing value to delete.
+    */
   override def giveBack(borrowing: Borrowing): Unit = {
 
     collection.deleteOne(and(
