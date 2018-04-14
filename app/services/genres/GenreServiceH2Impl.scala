@@ -152,4 +152,6 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
       .on('id -> bookId)
       .as(simple *)
   }
+
+
 }

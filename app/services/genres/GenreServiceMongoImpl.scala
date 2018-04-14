@@ -2,20 +2,32 @@ package services.genres
 
 import models.Genre
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
-import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.{equal, regex}
 import org.mongodb.scala.model.Sorts.ascending
-import services.Page
+import org.mongodb.scala.model.Updates._
+import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 import services.MongoHelper._
+import services.Page
 
 class GenreServiceMongoImpl extends GenreService {
-  private val codecRegistry = fromRegistries(fromProviders(classOf[Genre]), DEFAULT_CODEC_REGISTRY)
+
+  case class GenreMongo(id: Long, name: String, parent_genre: Option[Long])
+
+  private def GenreMongoToGenre(genreMongo: GenreMongo): Genre = {
+      new Genre(
+        genreMongo.id,
+        genreMongo.name,
+        genreBy(genreMongo.parent_genre)
+      )
+  }
+
+  private val codecRegistry = fromRegistries(fromProviders(classOf[GenreMongo]), DEFAULT_CODEC_REGISTRY)
 
   val client: MongoClient = MongoClient()
   val database: MongoDatabase = client.getDatabase("library").withCodecRegistry(codecRegistry)
-  val collection: MongoCollection[Genre] = database.getCollection("genres")
+  val collection: MongoCollection[GenreMongo] = database.getCollection("genres")
 
   /**
     * Return a page of Genres.
@@ -28,14 +40,16 @@ class GenreServiceMongoImpl extends GenreService {
   override def list(page: Int, pageSize: Int, orderBy: String, filterBy: String, filter: String): Page[Genre] = {
     val offset = pageSize * page
 
-    val friends = collection.find()
+    val genresMongo = collection.find()
       .filter(regex(filterBy, filter))
       .sort(ascending(orderBy))
       .skip(offset).limit(pageSize).results().toList
 
+    val genres: List[Genre] = genresMongo.map(g => GenreMongoToGenre(g))
+
     val totalRows = collection.count().headResult()
 
-    Page(friends, page, offset, totalRows)
+    Page(genres, page, offset, totalRows)
 
   }
 
@@ -44,7 +58,7 @@ class GenreServiceMongoImpl extends GenreService {
     *
     */
   override def findAll(): List[Genre] = {
-    collection.find().results().toList
+    collection.find().results().toList.map(g => GenreMongoToGenre(g))
   }
 
   /**
@@ -53,7 +67,11 @@ class GenreServiceMongoImpl extends GenreService {
     * @param id The genre id
     */
   override def findById(id: Long): Option[Genre] = {
-    Some(collection.find(equal("_id", id)).first().headResult())
+    val opt = Option(collection.find(equal("_id", id)).first().headResult())
+    if (opt.isEmpty)
+      Option.empty
+    else
+      Option(GenreMongoToGenre(opt.get))
   }
 
   /**
@@ -63,16 +81,19 @@ class GenreServiceMongoImpl extends GenreService {
     * @param entity The genre values.
     */
   override def update(id: Long, entity: Genre): Unit = {
-    collection.replaceOne(equal("_id", id), entity)
+    collection.updateOne(equal("_id", id), set("name", entity.name))
   }
 
   /**
-    * Insert a new Friend.
+    * Insert a new Genre.
     *
     * @param entity The genre values.
     */
   override def insert(entity: Genre): Unit = {
-    collection.insertOne(entity).results()
+
+    val mongoGenre = GenreMongo( entity.id, entity.name, Option(entity.parent_genre.get.id))
+
+    collection.insertOne(mongoGenre).results()
 
   }
 
@@ -85,12 +106,24 @@ class GenreServiceMongoImpl extends GenreService {
     collection.deleteOne(equal("_id", id)).results()
   }
 
+  private def genreBy(id: Option[Long]): Option[Genre] = {
+    if (id.isEmpty) {
+      Option.empty
+    } else {
+      Some(GenreMongoToGenre(collection.find(equal("_id", id)).headResult()))
+    }
+  }
+
+
+
   /**
     * Returns Lins of book's genres
     * @param bookId The Bok id
     * @return
     */
   def genres(bookId: Long): List[Genre] = {
-    collection.find(equal("_id", bookId)).first().results().toList
+    collection.find(equal("_id", bookId)).first().results().toList.map(g => GenreMongoToGenre(g))
   }
+
+
 }
