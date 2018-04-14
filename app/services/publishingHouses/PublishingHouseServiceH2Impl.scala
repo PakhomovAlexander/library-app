@@ -110,7 +110,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
   /**
     * Insert a new Publishing house.
     *
-    * @param publishingHouse The friend values.
+    * @param publishingHouse The Publishing house values.
     */
   override def insert(publishingHouse: PublishingHouse): Unit = {
     db.withConnection { implicit connection =>

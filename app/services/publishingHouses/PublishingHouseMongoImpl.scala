@@ -24,7 +24,7 @@ class PublishingHouseMongoImpl extends PublishingHouseService {
     *
     * @param page     Page to display
     * @param pageSize Number of publishing houses per page
-    * @param orderBy  Friend property used for sorting
+    * @param orderBy  PublishingHouse property used for sorting
     * @param filter   Filter applied on the name column
     */
   override def list(page: Int, pageSize: Int, orderBy: String, filterBy: String, filter: String): Page[PublishingHouse] = {
