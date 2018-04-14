@@ -55,7 +55,7 @@ class PublishingHouseMongoImpl extends PublishingHouseService {
     * @param id The publishing house id
     */
   override def findById(id: Long): Option[PublishingHouse] = {
-    Some(collection.find(equal("_id", id)).first().headResult())
+    Some(collection.find(equal("id", id)).first().headResult())
   }
 
   /**
@@ -65,7 +65,7 @@ class PublishingHouseMongoImpl extends PublishingHouseService {
     * @param entity The publishing house values.
     */
   override def update(id: Long, entity: PublishingHouse): Unit = {
-    collection.replaceOne(equal("_id", id), entity)
+    collection.replaceOne(equal("id", id), entity)
   }
 
   /**
@@ -84,6 +84,6 @@ class PublishingHouseMongoImpl extends PublishingHouseService {
     * @param id Id of the publishing house to delete.
     */
   override def delete(id: Long): Unit = {
-    collection.deleteOne(equal("_id", id)).results()
+    collection.deleteOne(equal("id", id)).results()
   }
 }

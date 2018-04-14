@@ -67,7 +67,7 @@ class GenreServiceMongoImpl extends GenreService {
     * @param id The genre id
     */
   override def findById(id: Long): Option[Genre] = {
-    val opt = Option(collection.find(equal("_id", id)).first().headResult())
+    val opt = Option(collection.find(equal("id", id)).first().headResult())
     if (opt.isEmpty)
       Option.empty
     else
@@ -81,7 +81,7 @@ class GenreServiceMongoImpl extends GenreService {
     * @param entity The genre values.
     */
   override def update(id: Long, entity: Genre): Unit = {
-    collection.updateOne(equal("_id", id), set("name", entity.name))
+    collection.updateOne(equal("id", id), set("name", entity.name))
   }
 
   /**
@@ -103,14 +103,14 @@ class GenreServiceMongoImpl extends GenreService {
     * @param id Id of the genre to delete.
     */
   override def delete(id: Long): Unit = {
-    collection.deleteOne(equal("_id", id)).results()
+    collection.deleteOne(equal("id", id)).results()
   }
 
   private def genreBy(id: Option[Long]): Option[Genre] = {
     if (id.isEmpty) {
       Option.empty
     } else {
-      Some(GenreMongoToGenre(collection.find(equal("_id", id)).headResult()))
+      Some(GenreMongoToGenre(collection.find(equal("id", id)).headResult()))
     }
   }
 
@@ -122,7 +122,7 @@ class GenreServiceMongoImpl extends GenreService {
     * @return
     */
   def genres(bookId: Long): List[Genre] = {
-    collection.find(equal("_id", bookId)).first().results().toList.map(g => GenreMongoToGenre(g))
+    collection.find(equal("id", bookId)).first().results().toList.map(g => GenreMongoToGenre(g))
   }
 
 

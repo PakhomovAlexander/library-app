@@ -56,7 +56,7 @@ class FriendServiceMongoImpl extends FriendService {
     * @param id The friend id
     */
   override def findById(id: Long): Option[Friend] = {
-    Some(collection.find(equal("_id", id)).first().headResult())
+    Some(collection.find(equal("id", id)).first().headResult())
   }
 
   /**
@@ -66,7 +66,7 @@ class FriendServiceMongoImpl extends FriendService {
     * @param entity The friend values.
     */
   override def update(id: Long, entity: Friend): Unit = {
-    collection.replaceOne(equal("_id", id), entity)
+    collection.replaceOne(equal("id", id), entity)
   }
 
   /**
@@ -85,6 +85,6 @@ class FriendServiceMongoImpl extends FriendService {
     * @param id Id of the friend to delete.
     */
   override def delete(id: Long): Unit = {
-    collection.deleteOne(equal("_id", id)).results()
+    collection.deleteOne(equal("id", id)).results()
   }
 }

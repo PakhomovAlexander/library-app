@@ -26,7 +26,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
                        pub_author: Option[String],
                        translator: Option[String],
                        comment: Option[String],
-                       pub_house_id: Option[Long],
+                       pub_houseid: Option[Long],
                        genres: List[Long])
 
 
@@ -51,7 +51,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
       b.pub_author,
       b.translator,
       b.comment,
-      b.pub_house_id,
+      b.pub_houseid,
       b.genres))
 
   }
@@ -63,7 +63,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
     */
   override def findById(id: Long): Option[Book] = {
 
-    val opt = Option(collection.find(equal("_id", id)).first().headResult())
+    val opt = Option(collection.find(equal("id", id)).first().headResult())
     if (opt.isEmpty)
       Option.empty[Book]
     else
@@ -75,7 +75,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
         opt.get.pub_author,
         opt.get.translator,
         opt.get.comment,
-        opt.get.pub_house_id,
+        opt.get.pub_houseid,
         opt.get.genres))
 
   }
@@ -104,7 +104,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
       b.pub_author,
       b.translator,
       b.comment,
-      b.pub_house_id,
+      b.pub_houseid,
       b.genres))
 
     val totalRows = collection.count().headResult()
@@ -121,7 +121,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
     */
   override def update(id: Long, book: Book): Unit = {
 
-    collection.replaceOne(equal("_id", id), BookMongo(book.id,
+    collection.replaceOne(equal("id", id), BookMongo(book.id,
       book.name,
       book.author,
       book.pub_year,
@@ -165,7 +165,7 @@ class BookServiceMongoImpl(publishingHouseService: PublishingHouseService,
     */
   override def delete(id: Long): Unit = {
 
-    collection.deleteOne(equal("_id", id)).results()
+    collection.deleteOne(equal("id", id)).results()
 
   }
 
