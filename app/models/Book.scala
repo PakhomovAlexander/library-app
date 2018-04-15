@@ -26,7 +26,7 @@ object Book {
             translator: Option[String],
             comment: Option[String],
             pub_house_id: Option[BigInt],
-            genres: List[Long])(
+            genres: List[BigInt])(
              implicit publishingHouseService: PublishingHouseService,
              genreService: GenreService)
   : Book =
@@ -42,15 +42,15 @@ object Book {
 
   def unapplyForm(arg: Book):
   Option[(
-    Long,
+      BigInt,
       String,
       String,
       Option[Date],
       Option[String],
       Option[String],
       Option[String],
-      Option[Long],
-      List[Long])] =
+      Option[BigInt],
+      List[BigInt])] =
     Option(
       arg.id,
       arg.name,
@@ -59,6 +59,6 @@ object Book {
       arg.pub_author,
       arg.translator,
       arg.comment,
-      arg.pub_house.fold(Option.empty[Long])(house => Option(house.id)),
+      arg.pub_house.fold(Option.empty[BigInt])(house => Option(house.id)),
       arg.genres.map(_.id))
 }
