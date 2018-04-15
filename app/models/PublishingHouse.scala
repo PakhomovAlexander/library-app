@@ -1,9 +1,9 @@
 package models
 
-case class PublishingHouse(id: Long, name: String)
+case class PublishingHouse(id: BigInt, name: String)
 
 object PublishingHouse {
 
-  def apply(id: Long, name: String): PublishingHouse = new PublishingHouse(id, name)
+  def apply(id: BigInt, name: String): PublishingHouse = new PublishingHouse(id, name)
 
 }

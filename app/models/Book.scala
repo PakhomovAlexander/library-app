@@ -6,7 +6,7 @@ import java.util.Date
 import services.genres.GenreService
 import services.publishingHouses.PublishingHouseService
 
-case class Book(id: Long,
+case class Book(id: BigInt,
                 name: String,
                 author: String,
                 pub_year: Option[LocalDate],
@@ -18,14 +18,14 @@ case class Book(id: Long,
 
 object Book {
 
-  def apply(id: Long,
+  def apply(id: BigInt,
             name: String,
             author: String,
             pub_year: Option[Date],
             pub_author: Option[String],
             translator: Option[String],
             comment: Option[String],
-            pub_house_id: Option[Long],
+            pub_house_id: Option[BigInt],
             genres: List[Long])(
              implicit publishingHouseService: PublishingHouseService,
              genreService: GenreService)

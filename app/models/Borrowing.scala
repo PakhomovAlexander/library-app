@@ -16,8 +16,8 @@ case class Borrowing(book: Book,
 
 object Borrowing {
 
-  def apply(id_book: Long,
-            id_friend: Long,
+  def apply(id_book: BigInt,
+            id_friend: BigInt,
             borrow_date: Date,
             is_lost: Option[Boolean],
             is_damaged: Option[Boolean],
@@ -35,7 +35,7 @@ object Borrowing {
       comment
     )
 
-  def unapplyForm(arg: Borrowing): Option[(Long, Long, Date, Option[Boolean],
+  def unapplyForm(arg: Borrowing): Option[(BigInt, BigInt, Date, Option[Boolean],
     Option[Boolean], Option[Date], Option[String])] =
     Option((
       arg.book.id,
