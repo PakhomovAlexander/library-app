@@ -145,11 +145,11 @@ class BookServiceReactive  @Inject()(val reactiveMongoApi: ReactiveMongoApi,
 
   override def update(id: BigInt, entity: Book): Unit = {
     val search = toMongoBook(id)
-    val mongoFriend = toMongoBook(entity)
+    val mongoBook = toMongoBook(entity)
 
     val selector = document("_id" -> search._id)
 
-    collection.flatMap(_.update(selector, mongoFriend))
+    collection.flatMap(_.update(selector, mongoBook))
   }
 
   override def insert(entity: Book): Unit = {
