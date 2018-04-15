@@ -96,9 +96,10 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
   }
 
   override def update(id: BigInt, entity: PublishingHouse): Unit = {
+    val search = toMongoPublishingHouse(id)
     val mongoPublishingHouse = toMongoPublishingHouse(entity)
 
-    val selector = document("_id" -> mongoPublishingHouse._id)
+    val selector = document("_id" -> search._id)
 
     collection.flatMap(_.update(selector, mongoPublishingHouse))
   }

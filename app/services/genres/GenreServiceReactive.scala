@@ -110,9 +110,11 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
   }
 
   override def update(id: BigInt, entity: Genre): Unit = {
+
+    val search = toMongoGenre(id)
     val mongoFriend = toMongoGenre(entity)
 
-    val selector = document("_id" -> mongoFriend._id)
+    val selector = document("_id" -> search._id)
 
     collection.flatMap(_.update(selector, mongoFriend))
   }

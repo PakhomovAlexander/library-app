@@ -117,9 +117,10 @@ with MongoController with ReactiveMongoComponents {
   }
 
   override def update(id: BigInt, entity: Friend): Unit = {
+    val search = toMongoFriend(id)
     val mongoFriend = toMongoFriend(entity)
 
-    val selector = document("_id" -> mongoFriend._id)
+    val selector = document("_id" -> search._id)
 
     collection.flatMap(_.update(selector, mongoFriend))
   }
