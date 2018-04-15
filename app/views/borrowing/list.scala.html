@@ -1,0 +1,109 @@
+@import services.Page
+@(currentPage: Page[Borrowing], currentOrderBy: Int, currentFilter: String)(
+        implicit flash: play.api.mvc.Flash, messages: Messages)
+
+    @import b3.vertical.fieldConstructor
+
+    @****************************************
+    * Helper generating navigation links *
+    ****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.GenreController.list(newPage, newOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
+    }.getOrElse(currentOrderBy), currentFilter)
+
+}
+
+    @**********************************
+    * Helper generating table headers *
+    ***********************************@
+@header(orderBy: Int, title: String) = {
+    <th class="col@orderBy header @if(scala.math.abs(currentOrderBy) == orderBy) @{
+        if(currentOrderBy < 0) "headerSortDown" else "headerSortUp"
+    }">
+        <a href="@link(0, Some(orderBy))">@title</a>
+    </th>
+}
+
+@main("All borrowings") {
+
+    <h1>Borrowings: @currentPage.total</h1>
+
+    @flash.get("success").map { message =>
+        <div class="alert-message warning">
+            <strong>Done!</strong> @message
+        </div>
+    }
+
+    <div id="actions">
+        @b3.form(action = routes.BorrowingController.list()) {
+            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by date...">
+            <input type="submit" id="searchsubmit" value="Filter by date" class="btn primary">
+        }
+
+        <a class="btn success" id="add" href="@routes.BorrowingController.create()">Borrow</a>
+    </div>
+
+    @Option(currentPage.items).filterNot(_.isEmpty).map { borrowings =>
+
+    <table class="friend zebra-striped">
+        <thead>
+            <tr>
+                @header(2, "friend name")
+                @header(3, "book name")
+                @header(3, "borrow date")
+                @header(4, "lost")
+                @header(5, "damaged")
+                @header(6, "return date")
+                @header(7, "comment")
+            </tr>
+        </thead>
+        <tbody>
+
+    @borrowings.map { borrowing =>
+            <tr>
+                <td><a href="@routes.FriendsController.edit(borrowing.friend.id.get)">@borrowing.friend.fio</a></td>
+                <td><a href="@routes.BookController.edit(borrowing.book.id)">@borrowing.book.name</a></td>
+                <td>@borrowing.borrow_date</td>
+                <td>@borrowing.is_lost.getOrElse { <em>-</em> } </td>
+                <td>@borrowing.is_damaged.getOrElse { <em>-</em> } </td>
+                <td>@borrowing.return_date.getOrElse { <em>-</em> } </td>
+                <td>@borrowing.comment.getOrElse { <em>-</em> } </td>
+            </tr>
+        }
+
+        </tbody>
+    </table>
+
+    <div id="pagination" class="pagination">
+        <ul>
+            @currentPage.prev.map { page =>
+            <li class="prev">
+                <a href="@link(page)">&larr; Previos</a>
+            </li>
+            }.getOrElse {
+                <li class="prev disabled">
+                    <a>&larr; Previos</a>
+                </li>
+            }
+        <li class="current">
+            <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + borrowings.size) of @currentPage.total</a>
+        </li>
+            @currentPage.next.map { page =>
+            <li class="next">
+                <a href="@link(page)">Next &rarr;</a>
+            </li>
+            }.getOrElse {
+                <li class="next disabled">
+                    <a>Next &rarr;</a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    }.getOrElse {
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+    }
+}

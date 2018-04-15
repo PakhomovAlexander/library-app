@@ -1,0 +1,28 @@
+@(bookForm: Form[Book], genres: List[Genre])(implicit messages: Messages)
+@genresOpt = @{ genres map ("" -> _.name) }
+
+    @import b3.vertical.fieldConstructor
+
+    @main("Add a book") {
+
+    <h1>Add a book</h1>
+
+    @b3.form(routes.BookController.save()) {
+
+        <fieldset>
+            @b3.text(bookForm("name"), '_label -> "name", '_help -> "")
+            @b3.text(bookForm("author"), '_label -> "author", '_help -> "")
+            @b3.date(bookForm("pub_year"), '_label -> "pub_year", '_help -> "")
+            @b3.text(bookForm("pub_author"), '_label -> "pub_author", '_help -> "")
+            @b3.text(bookForm("translator"), '_label -> "translator", '_help -> "")
+            @b3.text(bookForm("comment"), '_label -> "comment", '_help -> "")
+            @b3.number(bookForm("pub_house"), '_label -> "pub_house", '_help -> "")
+            @b3.select( bookForm("genres"), options = genresOpt, '_custom -> true, '_label -> "Genres" )
+        </fieldset>
+
+        <div class="actions">
+            <input type="submit" value="Create this book" class="btn primary"> or
+            <a href="@routes.BookController.list()" class="btn">Close</a>
+        </div>
+    }
+}

@@ -1,0 +1,24 @@
+@(friendForm: Form[Friend])(implicit messages: Messages)
+
+    @import b3.horizontal.fieldConstructor
+
+    @main("Add a computer") {
+
+    <h1>Add a friend</h1>
+
+    @b3.horizontal.form(routes.FriendsController.save(), "col-md-2", "col-md-10") { implicit hcf =>
+
+        <fieldset>
+            @b3.text(friendForm("FIO"), '_label -> "FIO", '_help -> "")
+            @b3.text(friendForm("Phone number"), '_label -> "Phone number", '_help -> "")
+            @b3.text(friendForm("Social networks"), '_label -> "Social networks", '_help -> "")
+            @b3.email(friendForm("Email"), '_label -> "Email", '_help -> "")
+            @b3.text(friendForm("Comment"), '_label -> "Comment", '_help -> "")
+        </fieldset>
+
+        <div class="actions">
+            <input type="submit" value="Create this friend" class="btn primary"> or
+            <a href="@routes.FriendsController.list()" class="btn">Close</a>
+        </div>
+    }
+}
