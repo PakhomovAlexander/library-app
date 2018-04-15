@@ -1,0 +1,20 @@
+@(houseForm: Form[PublishingHouse])(implicit messages: Messages)
+
+    @import b3.vertical.fieldConstructor
+
+    @main("Add a publishing house") {
+
+    <h1>Add a publishing house</h1>
+
+    @b3.form(routes.PublishingHouseController.save()) {
+
+        <fieldset>
+            @b3.text(houseForm("name"), '_label -> "name", '_help -> "")
+        </fieldset>
+
+        <div class="actions">
+            <input type="submit" value="Create this publishing house" class="btn primary"> or
+            <a href="@routes.PublishingHouseController.list()" class="btn">Close</a>
+        </div>
+    }
+}

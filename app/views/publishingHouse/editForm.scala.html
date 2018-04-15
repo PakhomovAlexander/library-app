@@ -1,0 +1,25 @@
+@(id: Long, publishingHouseForm: Form[PublishingHouse])(implicit messages: Messages)
+
+    @import b3.vertical.fieldConstructor
+
+
+    @main("Edit publishing house") {
+
+        <h1>Edit publishing house</h1>
+
+        @b3.form(action = routes.PublishingHouseController.update(id)) {
+            <fieldset>
+                @b3.text(publishingHouseForm("name"), '_label -> "name", '_help -> "")
+            </fieldset>
+            <div class="actions">
+                <input type="submit" value="Save this publishing house" class="btn primary"> or
+                <a href="@routes.PublishingHouseController.list()" class="btn">Close</a>
+            </div>
+
+        }
+
+        @b3.form(routes.PublishingHouseController.delete(id), 'class -> "topRight") {
+            <input type="submit" value="Delete this publishing house" class="btn danger">
+        }
+
+    }

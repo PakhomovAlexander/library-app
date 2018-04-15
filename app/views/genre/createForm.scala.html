@@ -1,0 +1,21 @@
+@(genreForm: Form[Genre])(implicit messages: Messages)
+
+    @import b3.vertical.fieldConstructor
+
+    @main("Add a genre") {
+
+    <h1>Add a genre</h1>
+
+    @b3.form(routes.GenreController.save()) {
+
+        <fieldset>
+            @b3.text(genreForm("name"), '_label -> "name", '_help -> "")
+            @b3.text(genreForm("genres"), '_label -> "??? todo", '_help -> "")
+        </fieldset>
+
+        <div class="actions">
+            <input type="submit" value="Create this genre" class="btn primary"> or
+            <a href="@routes.GenreController.list()" class="btn">Close</a>
+        </div>
+    }
+}
