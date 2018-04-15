@@ -67,7 +67,7 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     * @param date part of pk
     * @return
     */
-  override def findByPk(id_friend: Long, id_book: Long, date: LocalDate): Option[Borrowing] =
+  override def findByPk(id_friend: BigInt, id_book: BigInt, date: LocalDate): Option[Borrowing] =
     db.withConnection { implicit connection =>
       SQL("select * from borrowing where id_friend = {id_friend} and id_book = {id_book} and borrow_date = {date}")
         .on('id_friend -> id_friend,

@@ -1,6 +1,6 @@
 package models
 
-import java.sql.{SQLClientInfoException, SQLException}
+import java.sql.SQLException
 import java.util.Date
 
 import services.books.BookService

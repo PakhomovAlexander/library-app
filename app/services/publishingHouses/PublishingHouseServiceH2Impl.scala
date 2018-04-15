@@ -36,7 +36,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
     *
     * @param id The publishing house id
     */
-  override def findById(id: Long): Option[PublishingHouse] = db.withConnection { implicit connection =>
+  override def findById(id: BigInt): Option[PublishingHouse] = db.withConnection { implicit connection =>
     SQL("select * from publishing_house where id = {id}")
       .on('id -> id)
       .as(simple.singleOpt)
@@ -92,7 +92,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
     * @param id              The house id
     * @param publishingHouse The house values.
     */
-  override def update(id: Long, publishingHouse: PublishingHouse): Unit = {
+  override def update(id: BigInt, publishingHouse: PublishingHouse): Unit = {
     db.withConnection { implicit connection =>
       SQL(
         """
@@ -132,7 +132,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
     *
     * @param id Id of the house to delete.
     */
-  override def delete(id: Long): Unit = {
+  override def delete(id: BigInt): Unit = {
     db.withConnection { implicit connection =>
       SQL("delete from publishing_house where id = {id}").on('id -> id).executeUpdate()
     }

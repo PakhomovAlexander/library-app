@@ -65,7 +65,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     *
     * @param id The book id
     */
-  override def findById(id: Long): Option[Book] = db.withConnection { implicit connection =>
+  override def findById(id: BigInt): Option[Book] = db.withConnection { implicit connection =>
     val book = SQL("select * from book where id = {id}")
       .on('id -> id)
       .as(simple.singleOpt)
