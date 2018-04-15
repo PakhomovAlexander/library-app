@@ -97,7 +97,7 @@ with MongoController with ReactiveMongoComponents {
 
     val result = Await.result(future, Duration.Inf).map(f => toFriend(f))
 
-    Page(result, page, offset, totalRows)
+    Page(result, page, offset, totalRows.size)
 
   }
 
