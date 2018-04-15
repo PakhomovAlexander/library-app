@@ -1,6 +1,6 @@
 package models
 
-case class Friend(id: Option[Long],
+case class Friend(id: Option[BigInt],
                   fio: String,
                   phone_number: Option[String],
                   social_number: Option[String],
@@ -9,7 +9,7 @@ case class Friend(id: Option[Long],
 
 object Friend {
 
-  def apply(id: Long,
+  def apply(id: BigInt,
             fio: String,
             phone_number: String,
             social_number: String,
