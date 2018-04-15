@@ -15,33 +15,34 @@ case class Borrowing(book: Book,
                      comment: Option[String])
 
 object Borrowing {
-  def apply(id_book: Long,
-            id_friend: Long,
+  def apply(id_book: String,
+            id_friend: String,
             borrow_date: Date,
-            is_lost: Option[Boolean],
-            is_damaged: Option[Boolean],
+            is_lost: Option[String],
+            is_damaged: Option[String],
             return_date: Option[Date],
             comment: Option[String])(
              implicit bookService: BookService,
              friendService: FriendService): Borrowing =
     new Borrowing(
-      bookService.findById(id_book).getOrElse(throw new SQLException("no such book")),
-      friendService.findById(id_friend).getOrElse(throw new SQLException("no such friend")),
+      bookService.findById(id_book.toLong).getOrElse(throw new SQLException("no such book")),
+      friendService.findById(id_friend.toLong).getOrElse(throw new SQLException("no such friend")),
       borrow_date,
-      is_lost,
-      is_damaged,
+      Option(is_lost.get == "Yes"),
+      Option(is_damaged.get == "Yes"),
       return_date,
       comment
     )
 
-  def unapplyForm(arg: Borrowing): Option[(Long, Long, Date, Option[Boolean],
-    Option[Boolean], Option[Date], Option[String])] =
+
+  def unapplyForm(arg: Borrowing): Option[(String, String, Date, Option[String],
+    Option[String], Option[Date], Option[String])] =
     Option((
-      arg.book.id,
-      arg.friend.id.get,
+      arg.book.id.toString,
+      arg.friend.id.get.toString,
       arg.borrow_date,
-      arg.is_lost,
-      arg.is_damaged,
+      if (arg.is_lost.get) Option("Yes") else Option("No"),
+      if (arg.is_damaged.get) Option("Yes") else Option("No"),
       arg.return_date,
       arg.comment))
 }

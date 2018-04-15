@@ -1,8 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
-import models.Book
+import models.{Book, Genre}
 import play.api.data.Form
 import play.api.data.Forms.{ignored, mapping, _}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,7 +34,7 @@ class BookController @Inject()(bookService: BookService,
       "pub_author" -> optional(text),
       "translator" -> optional(text),
       "comment" -> optional(text),
-      "pub_house_id" -> optional(longNumber),
+      "pub_house" -> optional(longNumber),
       "genres" -> play.api.data.Forms.list(longNumber)
     )(Book.apply)(Book.unapplyForm)
   )
@@ -63,7 +62,8 @@ class BookController @Inject()(bookService: BookService,
     */
   def edit(id: Long) = Action { implicit request =>
     bookService.findById(id).map { book =>
-      Ok(html.book.editForm(id, bookForm.fill(book), book.genres))
+      Ok(html.book.editForm(id, bookForm.fill(book), genreService.findAll(),
+        book.genres, publishingHouseService.findAll()))
     }.getOrElse(NotFound)
   }
 
@@ -74,7 +74,8 @@ class BookController @Inject()(bookService: BookService,
     */
   def update(id: Long) = Action { implicit request =>
     bookForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.book.editForm(id, formWithErrors, null)),
+      formWithErrors => BadRequest(html.book.editForm(id, formWithErrors, genreService.findAll(),
+        bookService.findById(id).get.genres, publishingHouseService.findAll())),
       book => {
         bookService.update(id, book)
         Home.flashing("success" -> s"Book ${book.name} has been updated")
@@ -86,7 +87,7 @@ class BookController @Inject()(bookService: BookService,
     * Display the 'new book form'.
     */
   def create = Action { implicit request =>
-    Ok(html.book.createForm(bookForm, null))
+    Ok(html.book.createForm(bookForm, genreService.findAll(), publishingHouseService.findAll()))
   }
 
   /**
@@ -94,7 +95,7 @@ class BookController @Inject()(bookService: BookService,
     */
   def save = Action { implicit request =>
     bookForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.book.createForm(formWithErrors, null)),
+      formWithErrors => BadRequest(html.book.createForm(formWithErrors, genreService.findAll(), publishingHouseService.findAll())),
       book => {
         bookService.insert(book)
         Home.flashing("success" -> s"Book ${book.name} has been created")

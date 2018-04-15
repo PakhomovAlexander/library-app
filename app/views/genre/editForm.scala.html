@@ -1,7 +1,7 @@
-@(id: Long, genreForm: Form[Genre])(implicit messages: Messages)
+@(id: Long, genreForm: Form[Genre], genres: List[Genre])(implicit messages: Messages)
 
     @import b3.vertical.fieldConstructor
-
+    @genresSelects = @{genres.map(g => (g.id.toString, g.name)).+:("-99", "No parent")}
 
     @main("Edit genre") {
 
@@ -13,7 +13,7 @@
             </div>
 
             <div class = "row form-row">
-                @b3.select(genreForm("Parent"), '_label -> "Parent", '_help -> "")
+                @b3.select(genreForm("Parent"), options = genresSelects, '_label -> "Parent")
             </div>
 
             <div class="actions">

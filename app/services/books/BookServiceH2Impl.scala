@@ -1,8 +1,9 @@
 package services.books
+
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
 import models._
@@ -10,7 +11,7 @@ import play.api.db.DBApi
 import services.Page
 import services.genres.{GenreService, GenreServiceH2Impl}
 import services.publishingHouses.PublishingHouseService
-  import java.time.format.DateTimeFormatter
+import java.time.format.{DateTimeFormatter, DateTimeParseException}
 
 
 @Singleton
@@ -22,7 +23,8 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
   private val db = dbapi.database("default")
 
 
-  private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s")
+  private val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s")
+  private val localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
   /**
     * Parse a Book from a ResultSet
@@ -41,7 +43,12 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
           id.get,
           name,
           author,
-          Option(LocalDate.parse(pub_year.orNull, formatter)),
+          pub_year.fold(Option.empty[LocalDate])(pub_year =>
+            try {
+              Option(LocalDate.parse(pub_year, localDateTimeFormatter))
+            } catch {
+              case e: DateTimeParseException => Option(LocalDate.parse(pub_year, localDateFormatter))
+            }),
           pic_author,
           translator,
           comment,
@@ -71,6 +78,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
       .as(simple.singleOpt)
 
     if (book.isDefined) {
+      println(s">>>> ${bookWithGenres(book.get)}")
       Option(bookWithGenres(book.get))
     } else {
       Option.empty[Book]
@@ -98,7 +106,8 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
       val books = SQL(
         """
           select * from book
-          where {filterBy} like {filter}
+          where """ + filterBy +
+          """ like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """
@@ -120,14 +129,13 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
         'filter -> filter
       ).as(scalar[Long].single)
 
-//      Page(booksWithGenres(books), page, offset, totalRows)
-      println(s">>>>>>> SIZE:  ${books.size}")
-      Page(books, page, offset, totalRows)
+      Page(booksWithGenres(books), page, offset, totalRows)
     }
   }
 
   private def booksWithGenres(books: List[Book]) = {
-    val gnrs = books.map { book => genreService.genres(book.id) }
+    val gnrs = books.map { book => bookGenres(book) }
+
     books.zip(gnrs)
       .map {
         case (book, g: List[Genre]) =>
@@ -143,23 +151,42 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     */
   override def update(id: Long, book: Book): Unit = {
     db.withConnection { implicit connection =>
-      SQL(
-        """
+      book.pub_house.fold(
+        SQL(
+          """
               update book
-              set name = {name}, author = {author}, pub_year = {pub_year}, pub_author = {pub_author},
+              set name = {name}, author = {author}, pub_year = {pub_year}, pic_author = {pic_author},
+              translator = {translator}, comment = {comment}
+              where id = {id}
+            """
+        ).on(
+          'name -> book.name,
+          'author -> book.author,
+          'pub_year -> book.pub_year.fold("")(year => year.toString),
+          'pic_author -> book.pub_author.orNull,
+          'translator -> book.translator.orNull,
+          'comment -> book.comment.orNull,
+          'id -> id
+        ).executeUpdate()
+      )(house =>
+        SQL(
+          """
+              update book
+              set name = {name}, author = {author}, pub_year = {pub_year}, pic_author = {pic_author},
               translator = {translator}, comment = {comment}, pub_house = {pub_house}
               where id = {id}
             """
-      ).on(
-        'name -> book.name,
-        'author -> book.author,
-        'pub_year -> book.pub_year.toString,
-        'pub_author -> book.pub_author.orNull,
-        'translator -> book.translator.orNull,
-        'comment -> book.comment.orNull,
-        'pub_house -> book.pub_house.orNull.id,
-        'id -> id
-      ).executeUpdate()
+        ).on(
+          'name -> book.name,
+          'author -> book.author,
+          'pub_year -> book.pub_year.fold("")(year => year.toString),
+          'pic_author -> book.pub_author.orNull,
+          'translator -> book.translator.orNull,
+          'comment -> book.comment.orNull,
+          'pub_house -> house.id,
+          'id -> id
+        ).executeUpdate()
+      )
 
       syncGenres(book)
     }
@@ -191,21 +218,36 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     */
   override def insert(book: Book): Unit = {
     db.withConnection { implicit connection =>
-      SQL(
-        """
-              insert into book(id, name, pub_year, pic_autor, translator, author, comment, id_pub_house) values (
-                  {id}, {name}, {pub_year}, {pic_autor}, {translator}, {author}, {comment}, {id_pub_house});
+      book.pub_house.fold(
+        SQL(
+          """
+              insert into book(id, name, pub_year, pic_author, translator, author, comment) values (
+                  (select next value for book_seq), {name}, {pub_year}, {pic_author}, {translator}, {author}, {comment});
             """
-      ).on(
-        'id -> book.id,
-        'name -> book.name,
-        'pub_year -> book.pub_year.toString,
-        'pic_autor -> book.pub_author.orNull,
-        'translator -> book.translator.orNull,
-        'author -> book.author,
-        'comment -> book.comment.orNull,
-        'id_pub_house -> book.pub_house.orNull.id
-      ).executeUpdate()
+        ).on(
+          'name -> book.name,
+          'pub_year -> book.pub_year.fold("")(year => year.toString),
+          'pic_author -> book.pub_author.orNull,
+          'translator -> book.translator.orNull,
+          'author -> book.author,
+          'comment -> book.comment.orNull
+        ).executeUpdate()
+      )(house =>
+        SQL(
+          """
+              insert into book(id, name, pub_year, pic_author, translator, author, comment, id_pub_house) values (
+                  (select next value for book_seq), {name}, {pub_year}, {pic_author}, {translator}, {author}, {comment}, {id_pub_house});
+            """
+        ).on(
+          'name -> book.name,
+          'pub_year -> book.pub_year.fold("")(year => year.toString),
+          'pic_author -> book.pub_author.orNull,
+          'translator -> book.translator.orNull,
+          'author -> book.author,
+          'comment -> book.comment.orNull,
+          'id_pub_house -> house.id
+        ).executeUpdate())
+
       syncGenres(book)
     }
   }
@@ -227,8 +269,21 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
         'id_book -> id
       ).executeUpdate()
 
+      deleteGenres(id)
     }
   }
 
   private def pubHouse(id: Long) = publishingHouseService.findById(id)
+
+  private def deleteGenres(book_id: Long) = {
+    db.withConnection { implicit connection =>
+      SQL("delete from book_genre where id_book = {id_book}")
+        .on('id_book -> book_id)
+        .executeUpdate()
+    }
+  }
+
+  private def bookGenres(book: Book) = {
+    genreService.genres(book.id)
+  }
 }

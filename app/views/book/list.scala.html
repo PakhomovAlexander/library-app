@@ -49,7 +49,9 @@
     <table class="friend zebra-striped">
         <thead>
             <tr>
-                @header(2, "name")
+                @header(2, "Name")
+                @header(3, "Author")
+                @header(4, "Publishing year")
             </tr>
         </thead>
         <tbody>
@@ -59,11 +61,6 @@
                 <td><a href="@routes.BookController.edit(book.id)">@book.name</a></td>
                 <td>@book.author</td>
                 <td>@book.pub_year</td>
-                <td>@book.pub_author</td>
-                <td>@book.translator</td>
-                <td>@book.comment</td>
-                <td>@book.pub_house</td>
-                <td>@book.genres</td>
             </tr>
         }
 

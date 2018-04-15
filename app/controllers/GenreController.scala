@@ -41,7 +41,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     */
   def edit(id: Long) = Action { implicit request =>
     genreService.findById(id).map { genre =>
-      Ok(html.genre.editForm(id, form.fill(genre)))
+      Ok(html.genre.editForm(id, form.fill(genre), genreService.findAll()))
     }.getOrElse(NotFound)
   }
 
@@ -52,7 +52,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     */
   def update(id: Long) = Action { implicit request =>
     form.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.genre.editForm(id, formWithErrors)),
+      formWithErrors => BadRequest(html.genre.editForm(id, formWithErrors, genreService.findAll())),
       genre => {
         genreService.update(id, genre)
         Home.flashing("success" -> s"Genre ${genre.name} has been updated")
@@ -64,7 +64,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     * Display the 'new genre form'.
     */
   def create = Action { implicit request =>
-    Ok(html.genre.createForm(form))
+    Ok(html.genre.createForm(form, genreService.findAll()))
   }
 
   /**
@@ -72,7 +72,7 @@ class GenreController @Inject()(implicit genreService: GenreService,
     */
   def save = Action { implicit request =>
     form.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.genre.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.genre.createForm(formWithErrors, genreService.findAll())),
       genre => {
         genreService.insert(genre)
         Home.flashing("success" -> s"Genre ${genre.name} has been created")

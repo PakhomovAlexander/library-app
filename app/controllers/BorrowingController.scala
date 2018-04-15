@@ -30,13 +30,13 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   val borrowingForm = Form(
     mapping(
-      "id_friend" -> ignored[Long](-99L),
-      "id_book" -> ignored[Long](-99L),
+      "id_friend" -> text,
+      "id_book" -> text,
       "borrowing_date" -> date,
-      "is_lost" -> optional(boolean),
-      "is_damaged" -> optional(boolean),
+      "is_lost" -> optional(text),
+      "is_damaged" -> optional(text),
       "return_date" -> optional(date),
-      "commint" -> optional(text)
+      "comment" -> optional(text)
     )(Borrowing.apply)(Borrowing.unapplyForm)
   )
 
@@ -90,7 +90,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     * Display the 'new borrowing form'.
     */
   def create = Action { implicit request =>
-    Ok(html.borrowing.createForm(borrowingForm))
+    Ok(html.borrowing.createForm(borrowingForm, friendService.findAll(), bookService.findAll()))
   }
 
   /**
@@ -98,7 +98,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   def save = Action { implicit request =>
     borrowingForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.borrowing.createForm(formWithErrors)),
+      formWithErrors => BadRequest(html.borrowing.createForm(formWithErrors, friendService.findAll(), bookService.findAll())),
       borrowing => {
         borrowingService.borrow(borrowing)
         Home.flashing("success" -> s"The borrowing book ${borrowing.book.name} to ${borrowing.friend.fio} has been updated")
