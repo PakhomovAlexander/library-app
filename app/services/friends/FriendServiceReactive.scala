@@ -31,7 +31,7 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
     Await.result(future, Duration.Inf).map(f => toFriend(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoFriend]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoFriend]()
       .collect[List](-1, Cursor.FailOnError[List[MongoFriend]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toFriend(f))
@@ -62,14 +62,16 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
     _.collection[BSONCollection]("friends"))
 
   override def findAll(): List[Friend] = {
-    val future = collection.flatMap(_.find().cursor[MongoFriend]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoFriend]()
       .collect[List](-1, Cursor.FailOnError[List[MongoFriend]]())) // .FailOnError - обработчик иключения
 
     Await.result(future, Duration.Inf).map(f => toFriend(f))
   }
 
   override def findById(id: BigInt): Option[Friend] = {
-    val future = collection.flatMap(_.find("_id" -> id).cursor[MongoFriend]()
+    val search = toMongoFriend(id)
+
+    val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoFriend]()
       .collect[List](-1, Cursor.FailOnError[List[MongoFriend]]())) // .FailOnError - обработчик иключения
 
     Option(Await.result(future, Duration.Inf).map(f => toFriend(f)).head)
@@ -93,7 +95,7 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
   }
 
   private def toMongoFriend(friend: Friend): MongoFriend = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(friend.id.get.bigInteger.toString(16)).get
     }
@@ -118,7 +120,7 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
   }
 
   private def toMongoFriend(id: BigInt): MongoFriend = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(id.bigInteger.toString(16)).get
     }

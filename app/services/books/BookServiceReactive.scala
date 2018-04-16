@@ -1,6 +1,7 @@
 package services.books
 
-import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 import javax.inject.Inject
 import models.Book
@@ -36,7 +37,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     Await.result(future, Duration.Inf).map(f => toBook(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoBook]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoBook]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBook]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toBook(f))
@@ -55,7 +56,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   override def findAll(): List[Book] = {
-    val future = collection.flatMap(_.find().cursor[MongoBook]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoBook]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBook]]())) // .FailOnError - обработчик иключения
 
     Await.result(future, Duration.Inf).map(f => toBook(f))
@@ -65,7 +66,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     new Book(BigInt(mongoBook._id.stringify, 16),
       mongoBook.name,
       mongoBook.author,
-      mongoBook.pub_year,
+      Option(mongoBook.pub_year.get.toInstant.atZone(ZoneId.systemDefault()).toLocalDate),
       mongoBook.pub_author,
       mongoBook.translator,
       mongoBook.comment,
@@ -77,7 +78,9 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     _.collection[BSONCollection]("friends"))
 
   override def findById(id: BigInt): Option[Book] = {
-    val future = collection.flatMap(_.find("_id" -> id).cursor[MongoBook]()
+    val search = toMongoBook(id)
+
+    val future = collection.flatMap(_.find(document("_id" -> search._id)).cursor[MongoBook]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBook]]())) // .FailOnError - обработчик иключения
 
     Option(Await.result(future, Duration.Inf).map(f => toBook(f)).head)
@@ -102,7 +105,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   private def toMongoBook(book: Book): MongoBook = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(book.id.bigInteger.toString(16)).get
     }
@@ -126,7 +129,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     MongoBook(_id,
       book.name,
       book.author,
-      book.pub_year,
+      Option(Date.from(book.pub_year.get.atStartOfDay(ZoneId.systemDefault()).toInstant)),
       book.pub_author,
       book.translator,
       book.comment,
@@ -144,7 +147,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   private def toMongoBook(id: BigInt): MongoBook = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(id.bigInteger.toString(16)).get
     }
@@ -164,7 +167,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   case class MongoBook(_id: BSONObjectID,
                        name: String,
                        author: String,
-                       pub_year: Option[LocalDate],
+                       pub_year: Option[Date],
                        pub_author: Option[String],
                        translator: Option[String],
                        comment: Option[String],

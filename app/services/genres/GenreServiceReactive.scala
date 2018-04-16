@@ -30,7 +30,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
     Await.result(future, Duration.Inf).map(f => toGenre(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoGenre]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoGenre]()
       .collect[List](-1, Cursor.FailOnError[List[MongoGenre]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toGenre(f))
@@ -39,14 +39,16 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
   }
 
   override def findAll(): List[Genre] = {
-    val future = collection.flatMap(_.find().cursor[MongoGenre]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoGenre]()
       .collect[List](-1, Cursor.FailOnError[List[MongoGenre]]())) // .FailOnError - обработчик иключения
 
     Await.result(future, Duration.Inf).map(f => toGenre(f))
   }
 
   override def findById(id: BigInt): Option[Genre] = {
-    val future = collection.flatMap(_.find("_id" -> id).cursor[MongoGenre]()
+    val search = toMongoGenre(id)
+
+    val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoGenre]()
       .collect[List](-1, Cursor.FailOnError[List[MongoGenre]]())) // .FailOnError - обработчик иключения
 
     Option(Await.result(future, Duration.Inf).map(f => toGenre(f)).head)
@@ -63,7 +65,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
   }
 
   private def toMongoGenre(genre: Genre): MongoGenre = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(genre.id.bigInteger.toString(16)).get
     }
@@ -101,7 +103,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
   }
 
   private def toMongoGenre(id: BigInt): MongoGenre = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(id.bigInteger.toString(16)).get
     }
