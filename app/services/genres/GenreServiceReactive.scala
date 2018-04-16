@@ -58,7 +58,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
   override def update(id: BigInt, entity: Genre): Unit = {
 
     val search = toMongoGenre(id)
-    val mongoGenres = toMongoGenre(entity)
+    val mongoGenres = toMongoGenre(entity).copy(_id = search._id)
 
     val selector = document("_id" -> search._id)
 
