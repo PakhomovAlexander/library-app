@@ -17,7 +17,7 @@ object Friend {
   val friendForm = Form(
     mapping(
       "id" -> ignored(None: Option[String]),
-      "FIO" -> nonEmptyText.verifying("The fio can contain only letters!", fio => isFIO(fio)),
+      "FIO" -> nonEmptyText.verifying("The fio can contain only letters!", fio => isName(fio)),
       "Phone number" -> optional(text).verifying("Phone number should contains 0-9", num => isNumber(num)),
       "Social networks" -> optional(text),
       "Email" -> optional(email),
@@ -49,5 +49,5 @@ object Friend {
     n => n.matches("""^([0-9]|-)+$""")
   )
 
-  private def isFIO(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
+  private def isName(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
 }

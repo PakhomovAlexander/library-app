@@ -4,7 +4,9 @@ import play.api.data.Form
 import play.api.data.Forms.{ignored, mapping, optional, _}
 import services.genres.GenreService
 
-case class Genre(id: BigInt, name: String, parent_genre: Option[Genre])
+case class Genre(id: BigInt, name: String, parent_genre: Option[Genre]){
+  override def toString: String = s"$name ${parent_genre.fold("")(genre => s"// $genre")}"
+}
 
 object Genre {
   /**
@@ -15,7 +17,7 @@ object Genre {
     Form(
       mapping(
         "id" -> ignored[String]("-99"),
-        "Name" -> nonEmptyText,
+        "Name" -> nonEmptyText.verifying("The fio can contain only letters!", name => isName(name)),
         "Parent" -> optional(text)
       )(Genre.apply)(Genre.unapplyForm)
     )
@@ -37,4 +39,6 @@ object Genre {
       arg.parent_genre.map(_.id.toString)
     )
   }
+
+  private def isName(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
 }
