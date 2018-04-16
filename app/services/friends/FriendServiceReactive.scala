@@ -76,7 +76,7 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
     val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoFriend]()
       .collect[List](-1, Cursor.FailOnError[List[MongoFriend]]())) // .FailOnError - обработчик иключения
 
-    Option(Await.result(future, Duration.Inf).map(f => toFriend(f)).head)
+    Await.result(future, Duration.Inf).map(f => toFriend(f)).headOption
   }
 
   implicit def personWriter: BSONDocumentWriter[MongoFriend] = Macros.writer[MongoFriend]

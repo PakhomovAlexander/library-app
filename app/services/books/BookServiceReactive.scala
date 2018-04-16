@@ -84,7 +84,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     val future = collection.flatMap(_.find(document("_id" -> search._id)).cursor[MongoBook]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBook]]())) // .FailOnError - обработчик иключения
 
-    Option(Await.result(future, Duration.Inf).map(f => toBook(f)).head)
+    Await.result(future, Duration.Inf).map(f => toBook(f)).headOption
   }
 
   implicit def personWriter: BSONDocumentWriter[MongoBook] = Macros.writer[MongoBook]

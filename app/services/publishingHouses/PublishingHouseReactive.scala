@@ -100,7 +100,7 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
     val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoPublishingHouse]()
       .collect[List](-1, Cursor.FailOnError[List[MongoPublishingHouse]]())) // .FailOnError - обработчик иключения
 
-    Option(Await.result(future, Duration.Inf).map(f => toPublishingHouse(f)).head)
+    Await.result(future, Duration.Inf).map(f => toPublishingHouse(f)).headOption
   }
 
   override def update(id: BigInt, entity: PublishingHouse): Unit = {
