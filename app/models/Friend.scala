@@ -22,17 +22,18 @@ object Friend {
       "Social networks" -> optional(text),
       "Email" -> optional(email),
       "Comment" -> optional(text)
-    )(Friend.apply)(Friend.unapplyForm)
+    )(Friend.applyForm)(Friend.unapplyForm)
   )
 
-  def apply(id: Option[String],
+  def applyForm(id: Option[String],
             fio: String,
             phone_number: Option[String],
             social_number: Option[String],
             email: Option[String],
             comment: Option[String]): Friend = new
       Friend(
-        Option(BigInt(id.get)),
+//        Option(BigInt(id.get)),
+        id map ( x => BigInt(x) ),
         fio,
         phone_number,
         social_number,

@@ -36,8 +36,8 @@ class PublishingHouseController @Inject()(publishingHouseService: PublishingHous
     *
     * @param id Id of the house to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    publishingHouseService.findById(id).map { house =>
+  def edit(id: String) = Action { implicit request =>
+    publishingHouseService.findById(BigInt(id)).map { house =>
       Ok(html.publishingHouse.editForm(id, publishingHouseForm.fill(house)))
     }.getOrElse(NotFound)
   }
@@ -47,11 +47,11 @@ class PublishingHouseController @Inject()(publishingHouseService: PublishingHous
     *
     * @param id Id of the house to edit
     */
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     publishingHouseForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.publishingHouse.editForm(id, formWithErrors)),
       house => {
-        publishingHouseService.update(id, house)
+        publishingHouseService.update(BigInt(id), house)
         Home.flashing("success" -> s"Publishing house ${house.name} has been updated")
       }
     )
@@ -80,8 +80,8 @@ class PublishingHouseController @Inject()(publishingHouseService: PublishingHous
   /**
     * Handle publishing house deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    publishingHouseService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    publishingHouseService.delete(BigInt(id))
     Home.flashing("success" -> "Publishing house has been deleted")
   }
 }

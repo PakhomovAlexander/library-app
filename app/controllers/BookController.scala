@@ -42,8 +42,8 @@ class BookController @Inject()(bookService: BookService,
     *
     * @param id Id of the book to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    bookService.findById(id).map { book =>
+  def edit(id: String) = Action { implicit request =>
+    bookService.findById(BigInt(id)).map { book =>
       Ok(html.book.editForm(id, bF.fill(book), genreService.findAll(),
         book.genres, publishingHouseService.findAll()))
     }.getOrElse(NotFound)
@@ -54,12 +54,12 @@ class BookController @Inject()(bookService: BookService,
     *
     * @param id Id of the book to edit
     */
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     bF.bindFromRequest.fold(
       formWithErrors => BadRequest(html.book.editForm(id, formWithErrors, genreService.findAll(),
-        bookService.findById(id).get.genres, publishingHouseService.findAll())),
+        bookService.findById(BigInt(id)).get.genres, publishingHouseService.findAll())),
       book => {
-        bookService.update(id, book)
+        bookService.update(BigInt(id), book)
         Home.flashing("success" -> s"Book ${book.name} has been updated")
       }
     )
@@ -88,8 +88,8 @@ class BookController @Inject()(bookService: BookService,
   /**
     * Handle book deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    bookService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    bookService.delete(BigInt(id))
     Home.flashing("success" -> "Book has been deleted")
   }
 }

@@ -58,7 +58,7 @@
 
         @books.map { book =>
             <tr>
-                <td><a href="@routes.BookController.edit(book.id)">@book.name</a></td>
+                <td><a href="@routes.BookController.edit(book.id.toString)">@book.name</a></td>
                 <td>@book.author</td>
                 <td>@book.pub_year</td>
             </tr>

@@ -62,8 +62,8 @@
 
     @borrowings.map { borrowing =>
             <tr>
-                <td><a href="@routes.FriendsController.edit(borrowing.friend.id.get)">@borrowing.friend.fio</a></td>
-                <td><a href="@routes.BookController.edit(borrowing.book.id)">@borrowing.book.name</a></td>
+                <td><a href="@routes.FriendsController.edit(borrowing.friend.id.get.toString)">@borrowing.friend.fio</a></td>
+                <td><a href="@routes.BookController.edit(borrowing.book.id.toString)">@borrowing.book.name</a></td>
                 <td>@borrowing.borrow_date</td>
                 <td>@borrowing.is_lost.getOrElse { <em>-</em> } </td>
                 <td>@borrowing.is_damaged.getOrElse { <em>-</em> } </td>

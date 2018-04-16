@@ -1,4 +1,4 @@
-@(id: Long, bookForm: Form[Book], genres: List[Genre], bookGenres: List[Genre], houses: List[PublishingHouse])(implicit messages: Messages)
+@(id: String, bookForm: Form[Book], genres: List[Genre], bookGenres: List[Genre], houses: List[PublishingHouse])(implicit messages: Messages)
 @genresOpt = @{ genres map (genre => genre.id.toString -> genre.name) }
 @housesOpt = @{ houses.map(house => house.id.toString -> house.name).+:("-99", "No house") }
     @import b3.vertical.fieldConstructor

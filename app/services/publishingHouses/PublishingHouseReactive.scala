@@ -65,8 +65,9 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
 
   override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String, filter: String): Page[PublishingHouse] ={
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
     val future = collection.flatMap(_.find(selector)
       .sort(BSONDocument(mapOrder(orderBy) -> 1))

@@ -51,7 +51,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     * @param orderBy  Book property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String, filterBy: String = "name", filter: String = "%"): Page[Genre] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "name", filter: String = "%"): Page[Genre] = {
 
     val offset = pageSize * page
 

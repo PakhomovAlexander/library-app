@@ -23,10 +23,11 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
                                     publishingHouseService: PublishingHouseService) extends BookService
   with MongoController with ReactiveMongoComponents {
 
-  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String, filter: String): Page[Book] = {
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String = "name", filter: String): Page[Book] = {
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
     val future = collection.flatMap(_.find(selector)
       .sort(BSONDocument(mapOrder(orderBy) -> 1))

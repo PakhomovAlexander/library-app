@@ -1,4 +1,4 @@
-@(id: Long, genreForm: Form[Genre], genres: List[Genre])(implicit messages: Messages)
+@(id: String, genreForm: Form[Genre], genres: List[Genre])(implicit messages: Messages)
 
     @import b3.vertical.fieldConstructor
     @genresSelects = @{genres.map(g => (g.id.toString, g.name)).+:("-99", "No parent")}

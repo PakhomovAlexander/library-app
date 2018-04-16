@@ -38,8 +38,8 @@ class FriendsController @Inject()(friendService: FriendService,
     *
     * @param id Id of the friend to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    friendService.findById(id).map { friend =>
+  def edit(id: String) = Action { implicit request =>
+    friendService.findById(BigInt(id)).map { friend =>
       Ok(html.friend.editForm(id, friendForm.fill(friend)))
     }.getOrElse(NotFound)
   }
@@ -49,11 +49,11 @@ class FriendsController @Inject()(friendService: FriendService,
     *
     * @param id Id of the friend to edit
     */
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     friendForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.friend.editForm(id, formWithErrors)),
       friend => {
-        friendService.update(id, friend)
+        friendService.update(BigInt(id), friend)
         Home.flashing("success" -> s"Friend ${friend.fio} has been updated")
       }
     )
@@ -82,8 +82,8 @@ class FriendsController @Inject()(friendService: FriendService,
   /**
     * Handle friend deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    friendService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    friendService.delete(BigInt(id))
     Home.flashing("success" -> "Friend has been deleted")
   }
 }

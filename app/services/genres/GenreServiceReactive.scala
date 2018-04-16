@@ -16,10 +16,11 @@ import scala.concurrent.{Await, Future}
 class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) extends GenreService
   with MongoController with ReactiveMongoComponents {
 
-  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String, filter: String): Page[Genre] = {
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String = "name", filter: String): Page[Genre] = {
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
     val future = collection.flatMap(_.find(selector)
       .sort(BSONDocument(mapOrder(orderBy) -> 1))
@@ -51,7 +52,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
     val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoGenre]()
       .collect[List](-1, Cursor.FailOnError[List[MongoGenre]]())) // .FailOnError - обработчик иключения
 
-    Option(Await.result(future, Duration.Inf).map(f => toGenre(f)).head)
+    Await.result(future, Duration.Inf).map(f => toGenre(f)).headOption
   }
 
   override def update(id: BigInt, entity: Genre): Unit = {

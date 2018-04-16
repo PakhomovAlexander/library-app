@@ -17,12 +17,14 @@ import scala.concurrent.duration.Duration
 class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) extends FriendService
   with MongoController with ReactiveMongoComponents {
 
-  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String, filter: String): Page[Friend] = {
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String = "fio", filter: String): Page[Friend] = {
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
-    val future = collection.flatMap(_.find(selector)
+    val future = collection
+      .flatMap(_.find(selector)
       .sort(BSONDocument(mapOrder(orderBy) -> 1))
       .skip(offset)
       .cursor[MongoFriend]()

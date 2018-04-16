@@ -38,8 +38,8 @@ class GenreController @Inject()(implicit genreService: GenreService,
     *
     * @param id Id of the genre to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    genreService.findById(id).map { genre =>
+  def edit(id: String) = Action { implicit request =>
+    genreService.findById(BigInt(id)).map { genre =>
       Ok(html.genre.editForm(id, form.fill(genre), genreService.findAll()))
     }.getOrElse(NotFound)
   }
@@ -49,11 +49,11 @@ class GenreController @Inject()(implicit genreService: GenreService,
     *
     * @param id Id of the genre to edit
     */
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     form.bindFromRequest.fold(
       formWithErrors => BadRequest(html.genre.editForm(id, formWithErrors, genreService.findAll())),
       genre => {
-        genreService.update(id, genre)
+        genreService.update(BigInt(id), genre)
         Home.flashing("success" -> s"Genre ${genre.name} has been updated")
       }
     )
@@ -82,8 +82,8 @@ class GenreController @Inject()(implicit genreService: GenreService,
   /**
     * Handle genre deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    genreService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    genreService.delete(BigInt(id))
     Home.flashing("success" -> "Genre has been deleted")
   }
 }

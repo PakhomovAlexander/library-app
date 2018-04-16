@@ -47,8 +47,8 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     * @param id_book   Id of the book to edit
     * @param date      Borrowing date
     */
-  def edit(id_friend: Long, id_book: Long, date: String) = Action { implicit request =>
-    borrowingService.findByPk(id_friend, id_book, LocalDate.parse(date)).map { borrowing =>
+  def edit(id_friend: String, id_book: String, date: String) = Action { implicit request =>
+    borrowingService.findByPk(BigInt(id_friend), BigInt(id_book), LocalDate.parse(date)).map { borrowing =>
       Ok(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), bF.fill(borrowing)))
     }.getOrElse(NotFound)
   }
@@ -60,7 +60,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     * @param id_book   Id of the book to edit
     * @param date      Borrowing date
     */
-  def update(id_friend: Long, id_book: Long, date: String) = Action { implicit request =>
+  def update(id_friend: String, id_book: String, date: String) = Action { implicit request =>
     bF.bindFromRequest.fold(
       formWithErrors => BadRequest(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), formWithErrors)),
       borrowing => {
@@ -93,8 +93,8 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
   /**
     * Handle friend deletion.
     */
-  def delete(id_friend: Long, id_book: Long, date: String) = Action { implicit request =>
-    borrowingService.findByPk(id_friend, id_book, LocalDate.parse(date)).fold(
+  def delete(id_friend: String, id_book: String, date: String) = Action { implicit request =>
+    borrowingService.findByPk(BigInt(id_friend), BigInt(id_book), LocalDate.parse(date)).fold(
       Home.flashing("error" -> "You don't have such borrowed book"))(
       brwd => {
         borrowingService.giveBack(brwd)
