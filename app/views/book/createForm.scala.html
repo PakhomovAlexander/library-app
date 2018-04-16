@@ -10,28 +10,31 @@
 
     @b3.form(routes.BookController.save()) {
             <div class = "row form-row">
-            @b3.text(bookForm("name"), '_label -> "Name", '_help -> "")
+            @b3.text(bookForm("name"), '_label -> "Name", '_help -> "book name, without any additions",
+                'placeholder -> "Awesome book name")
             </div>
 
         <div class = "row form-row">
-            @b3.text(bookForm("author"), '_label -> "Author", '_help -> "")
+            @b3.text(bookForm("author"), '_label -> "Author", '_help -> "",
+                'placeholder -> "Alexander Sergeevich Pushkin")
         </div>
 
         <div class = "row form-row">
-            @b3.date(bookForm("pub_year"), '_label -> "Pub_year", '_help -> "")
+            @b3.date(bookForm("pub_year"), '_label -> "Publishing year", '_help -> "")
         </div>
 
         <div class = "row form-row">
-            @b3.text(bookForm("pic_author"), '_label -> "Pic_author", '_help -> "")
+            @b3.text(bookForm("pic_author"), '_label -> "Picture author", '_help -> "")
         </div>
 
         <div class = "row form-row">
-            @b3.text(bookForm("translator"), '_label -> "Translator", '_help -> "")
+            @b3.text(bookForm("translator"), '_label -> "Translator", '_help -> "",
+                'placeholder -> "Translator name")
         </div>
 
         <div class = "row form-row">
-            @b3.text(bookForm("comment"), '_label -> "Comment", '_help -> "")
-
+            @b3.text(bookForm("comment"), '_label -> "Comment", '_help -> "what do you feel about this book?",
+                'placeholder -> "Comment")
         </div>
 
         <div class = "row form-row">

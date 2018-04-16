@@ -10,27 +10,27 @@
 
         @b3.form(action = routes.BookController.update(id)) {
             <div class = "row form-row">
-                @b3.text(bookForm("name"), '_label -> "name", '_help -> "")
+                @b3.text(bookForm("name"), '_label -> "Name", '_help -> "")
             </div>
 
             <div class = "row form-row">
-                @b3.text(bookForm("author"), '_label -> "author", '_help -> "")
+                @b3.text(bookForm("author"), '_label -> "Author", '_help -> "")
             </div>
 
             <div class = "row form-row">
-                @b3.date(bookForm("pub_year"), '_label -> "pub_year", '_help -> "")
+                @b3.date(bookForm("pub_year"), '_label -> "Publishing year", '_help -> "")
             </div>
 
             <div class = "row form-row">
-                @b3.text(bookForm("pub_author"), '_label -> "pub_author", '_help -> "")
+                @b3.text(bookForm("pub_author"), '_label -> "Picture author", '_help -> "")
             </div>
 
             <div class = "row form-row">
-                @b3.text(bookForm("translator"), '_label -> "translator", '_help -> "")
+                @b3.text(bookForm("translator"), '_label -> "Translator", '_help -> "")
             </div>
 
             <div class = "row form-row">
-                @b3.text(bookForm("comment"), '_label -> "comment", '_help -> "")
+                @b3.text(bookForm("comment"), '_label -> "Comment", '_help -> "")
             </div>
 
             <div class = "row form-row">

@@ -124,7 +124,8 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
     if (mongoGenre.parent_genre.nonEmpty)
       new Genre(BigInt(mongoGenre._id.stringify, 16),
         mongoGenre.name,
-        findById(BigInt(mongoGenre._id.stringify, 16)))
+        mongoGenre.parent_genre.fold(Option.empty[Genre])(p => findById(BigInt(p.stringify, 16)))
+      )
     else
       new Genre(BigInt(mongoGenre._id.stringify, 16),
         mongoGenre.name,
