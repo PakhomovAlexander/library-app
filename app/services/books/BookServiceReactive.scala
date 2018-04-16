@@ -76,7 +76,7 @@ class BookServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   def collection: Future[BSONCollection] = database.map(
-    _.collection[BSONCollection]("friends"))
+    _.collection[BSONCollection]("books"))
 
   override def findById(id: BigInt): Option[Book] = {
     val search = toMongoBook(id)

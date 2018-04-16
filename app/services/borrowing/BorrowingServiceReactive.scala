@@ -98,7 +98,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
 
 
   def collection: Future[BSONCollection] = database.map(
-    _.collection[BSONCollection]("friends"))
+    _.collection[BSONCollection]("borrowings"))
   implicit def personWriter: BSONDocumentWriter[MongoBorrowing] = Macros.writer[MongoBorrowing]
   implicit def personReader: BSONDocumentReader[MongoBorrowing] = Macros.reader[MongoBorrowing]
 

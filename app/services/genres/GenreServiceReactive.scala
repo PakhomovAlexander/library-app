@@ -74,9 +74,9 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
       case _: Throwable => _id = BSONObjectID.generate()
     }
 
-    var _id_parent: Option[BSONObjectID] = None
+    var _id_parent: Option[BSONObjectID] = Option(BSONObjectID.generate())
     try {
-      _id_parent = Option(BSONObjectID.parse(genre.id.bigInteger.toString(16)).get)
+      _id_parent = Option(BSONObjectID.parse(genre.parent_genre.get.id.bigInteger.toString(16)).get)
     }
     catch {
       case _: Throwable => _id_parent = None
@@ -124,8 +124,7 @@ class GenreServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ext
     if (mongoGenre.parent_genre.nonEmpty)
       new Genre(BigInt(mongoGenre._id.stringify, 16),
         mongoGenre.name,
-        mongoGenre.parent_genre.fold(Option.empty[Genre])(p => findById(BigInt(p.stringify, 16)))
-      )
+        findById(BigInt(mongoGenre.parent_genre.get.stringify, 16)))
     else
       new Genre(BigInt(mongoGenre._id.stringify, 16),
         mongoGenre.name,
