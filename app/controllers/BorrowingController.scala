@@ -49,7 +49,8 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   def edit(id_friend: String, id_book: String, date: String) = Action { implicit request =>
     borrowingService.findByPk(BigInt(id_friend), BigInt(id_book), LocalDate.parse(date)).map { borrowing =>
-      Ok(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), bF.fill(borrowing)))
+      Ok(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), bF.fill(borrowing),
+        friendService.findAll(), bookService.findAll()))
     }.getOrElse(NotFound)
   }
 
@@ -62,7 +63,8 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   def update(id_friend: String, id_book: String, date: String) = Action { implicit request =>
     bF.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), formWithErrors)),
+      formWithErrors => BadRequest(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), formWithErrors,
+        friendService.findAll(), bookService.findAll())),
       borrowing => {
         borrowingService.update(borrowing)
         Home.flashing("success" -> s"The borrowing book ${borrowing.book.name} to ${borrowing.friend.fio} has been updated")

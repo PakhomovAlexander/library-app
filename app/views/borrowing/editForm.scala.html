@@ -1,5 +1,8 @@
 @import java.time.LocalDate
-@(id_friend: String, id_book: String, date: LocalDate, borrowingForm: Form[Borrowing])(implicit messages: Messages)
+@(id_friend: String, id_book: String, date: LocalDate, borrowingForm: Form[Borrowing], friends: List[Friend], books: List[Book])(implicit messages: Messages)
+@friendsOpt = @{friends.map(frd => (frd.id.get.toString, frd.fio)).+:("-99", "Nobody")}
+@booksOpt = @{books.map(b => (b.id.toString, b.name)).+:("-99", "Nothing")}
+@boolOpt = @{List("1" -> "Yes", "0" -> "No")}
 
     @import b3.vertical.fieldConstructor
 
@@ -9,11 +12,36 @@
         <h1>Edit borrowing</h1>
 
         @b3.form(action = routes.BorrowingController.update(id_friend, id_book, date.toString)) {
-            <fieldset>
-                @b3.text(borrowingForm("friend.name"), '_label -> "friend name", '_help -> "")
-                @b3.text(borrowingForm("book.name"), '_label -> "book", '_help -> "")
-                @b3.date(borrowingForm("date"), '_label -> "date", '_help -> "")
-            </fieldset>
+            <div class = "row form-row">
+            @b3.text(borrowingForm("friend.name"), '_label -> "friend name", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.text(borrowingForm("book.name"), '_label -> "book", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.date(borrowingForm("date"), '_label -> "date", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.select(borrowingForm("is_lost"), options = boolOpt, '_label -> "Lost",  '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.select(borrowingForm("is_damaged"), options = boolOpt, '_label -> "Damaged", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.date(borrowingForm("return_date"), '_label -> "Return",
+                '_help -> "when should your friend return the book?")
+            </div>
+
+            <div class = "row form-row">
+            @b3.text(borrowingForm("comment"), '_label -> "Comment", '_help -> "Was everything ok?")
+            </div>
+
+
             <div class="actions">
                 <input type="submit" value="Save this borrowing" class="btn primary"> or
                 <a href="@routes.BorrowingController.list()" class="btn">Close</a>

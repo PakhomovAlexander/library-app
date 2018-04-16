@@ -39,7 +39,7 @@
 
             <div class = "row form-row">
             @b3.select( bookForm("genres"), options = genresOpt, '_label -> "Genres",
-                'multiple -> true, 'value ->  bookGenres.map(_.id.toString).mkString(","))
+                'multiple -> true, 'value ->  s"'${bookGenres.map(_.id.toString).mkString(",")}'")
             </div>
 
             <div class="actions">
