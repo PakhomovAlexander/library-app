@@ -85,7 +85,7 @@ class FriendServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) ex
 
   override def update(id: BigInt, entity: Friend): Unit = {
     val search = toMongoFriend(id)
-    val mongoFriend = toMongoFriend(entity)
+    val mongoFriend = toMongoFriend(entity).copy(_id = search._id)
 
     val selector = document("_id" -> search._id)
 
