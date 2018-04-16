@@ -164,7 +164,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
       .cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]()))
 
-    Option(Await.result(future, Duration.Inf).map(f => toBorrowing(f)).head)
+    Await.result(future, Duration.Inf).map(f => toBorrowing(f)).headOption
   }
 
   override def update(borrowing: Borrowing): Unit = {
