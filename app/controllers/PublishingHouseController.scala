@@ -1,7 +1,6 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
 import models.PublishingHouse.publishingHouseForm
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller, Result}

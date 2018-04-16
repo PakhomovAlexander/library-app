@@ -37,7 +37,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     *
     * @param id The genre id
     */
-  override def findById(id: Long): Option[Genre] = db.withConnection { implicit connection =>
+  override def findById(id: BigInt): Option[Genre] = db.withConnection { implicit connection =>
     SQL("select * from genre where id = {id}")
       .on('id -> id)
       .as(simple.singleOpt)
@@ -51,7 +51,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     * @param orderBy  Book property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "name", filter: String = "%"): Page[Genre] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String, filterBy: String = "name", filter: String = "%"): Page[Genre] = {
 
     val offset = pageSize * page
 
@@ -92,7 +92,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     * @param id    The genre id
     * @param genre The genre value.
     */
-  override def update(id: Long, genre: Genre): Unit = {
+  override def update(id: BigInt, genre: Genre): Unit = {
     db.withConnection { implicit connection =>
       genre.parent_genre.fold(
       SQL(
@@ -143,7 +143,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     *
     * @param id Id of the genre to delete.
     */
-  override def delete(id: Long): Unit = {
+  override def delete(id: BigInt): Unit = {
     db.withConnection { implicit connection =>
       SQL("delete from genre where id = {id}").on('id -> id).executeUpdate()
     }
@@ -165,9 +165,11 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     * @param bookId The Bok id
     * @return
     */
-  def genres(bookId: Long): List[Genre] = db.withConnection { implicit connection =>
+  def genres(bookId: BigInt): List[Genre] = db.withConnection { implicit connection =>
     SQL("select * from genre where id = {id}")
       .on('id -> bookId)
       .as(simple *)
   }
+
+
 }

@@ -1,10 +1,10 @@
 package models
 
 import play.api.data.Form
-import play.api.data.Forms._
-import play.api.data.Forms.{ignored, mapping}
+import play.api.data.Forms.{ignored, mapping, _}
 
-case class PublishingHouse(id: Long, name: String)
+case class PublishingHouse(id: BigInt, name: String)
+
 
 object PublishingHouse {
   /**
@@ -12,8 +12,12 @@ object PublishingHouse {
     */
   val publishingHouseForm = Form(
     mapping(
-      "id" -> ignored[Long](-99),
+      "id" -> ignored[String]("-99"),
       "Name" -> nonEmptyText
-    )(PublishingHouse.apply)(PublishingHouse.unapply)
+    )(PublishingHouse.apply)(PublishingHouse.unapplyForm)
   )
+
+  def apply(id: String, name: String): PublishingHouse = new PublishingHouse(BigInt(id), name)
+
+  def unapplyForm(arg: PublishingHouse): Option[(String, String)] = Option(arg.id.toString(), arg.name)
 }

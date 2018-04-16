@@ -21,6 +21,8 @@ libraryDependencies += "org.webjars" % "font-awesome" % "4.7.0"
 libraryDependencies += "org.webjars" % "bootstrap-datepicker" % "1.4.0" exclude("org.webjars", "bootstrap")
 libraryDependencies += "com.typesafe.play" %% "anorm" % "2.5.0"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.13.0-play25"
+
 libraryDependencies ++= Seq(
   "org.webjars"               %% "webjars-play"       % "2.3.0",
   "org.webjars"               % "jquery"              % "1.8.3"

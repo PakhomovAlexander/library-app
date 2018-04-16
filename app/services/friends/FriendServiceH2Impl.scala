@@ -1,9 +1,8 @@
 package services.friends
 
-import javax.inject.{Inject, Singleton}
-
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
+import javax.inject.{Inject, Singleton}
 import models.Friend
 import play.api.db.DBApi
 import services.Page
@@ -16,7 +15,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * Parse a Friend from a ResultSet
     */
   private val simple = {
-    get[Option[Long]]("friend.id") ~
+    get[Option[BigInt]]("friend.id") ~
       get[String]("friend.fio") ~
       get[Option[String]]("friend.phone_number") ~
       get[Option[String]]("friend.social_number") ~
@@ -40,7 +39,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     *
     * @param id The friend id
     */
-  override def findById(id: Long): Option[Friend] = db.withConnection { implicit connection =>
+  override def findById(id: BigInt): Option[Friend] = db.withConnection { implicit connection =>
     SQL("select * from friend where id = {id}")
       .on('id -> id)
       .as(simple.singleOpt)
@@ -54,11 +53,10 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * @param orderBy  Friend property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "FIO", filter: String = "%"): Page[Friend] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "fio", filter: String = "%"): Page[Friend] = {
 
     val offset = pageSize * page
 
-    print(s">>>> $filterBy like $filter")
     db.withConnection { implicit connection =>
 
       val friends = SQL(
@@ -86,8 +84,6 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
         'filter -> filter
       ).as(scalar[Long].single)
 
-      print(s">>>> ${friends.size}")
-
       Page(friends, page, offset, totalRows)
     }
   }
@@ -98,7 +94,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * @param id     The friend id
     * @param friend The friend values.
     */
-  override def update(id: Long, friend: Friend): Unit = {
+  override def update(id: BigInt, friend: Friend): Unit = {
     db.withConnection { implicit connection =>
       SQL(
         """
@@ -147,7 +143,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     *
     * @param id Id of the friend to delete.
     */
-  override def delete(id: Long): Unit = {
+  override def delete(id: BigInt): Unit = {
     db.withConnection { implicit connection =>
       SQL("delete from friend where id = {id}").on('id -> id).executeUpdate()
     }

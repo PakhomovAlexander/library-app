@@ -67,7 +67,7 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     * @param date part of pk
     * @return
     */
-  override def findByPk(id_friend: Long, id_book: Long, date: LocalDate): Option[Borrowing] =
+  override def findByPk(id_friend: BigInt, id_book: BigInt, date: LocalDate): Option[Borrowing] =
     db.withConnection { implicit connection =>
       SQL("select * from borrowing where id_friend = {id_friend} and id_book = {id_book} and borrow_date = {date}")
         .on('id_friend -> id_friend,
@@ -88,7 +88,7 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     * @param filterBy Column to be filtered
     */
   override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
-                    filterBy: String = "borrow_date", filter: String = "%"): Page[Borrowing] = {
+                    filterBy: String = "name", filter: String = "%"): Page[Borrowing] = {
 
     val offset = pageSize * page
 

@@ -10,7 +10,7 @@ trait BorrowingService extends PageService[Borrowing] {
 
   def findBy(filterBy: String = "id_book", filter: String): List[Borrowing]
 
-  def findByPk(id_friend: Long, id_book: Long, date: LocalDate): Option[Borrowing]
+  def findByPk(id_friend: BigInt, id_book: BigInt, date: LocalDate): Option[Borrowing]
 
   def update(borrowing: Borrowing): Unit
 

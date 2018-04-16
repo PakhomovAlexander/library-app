@@ -1,11 +1,9 @@
 package controllers
 
 import java.time.LocalDate
-import javax.inject.{Inject, Singleton}
 
-import models._
-import play.api.data.Forms._
-import play.api.data._
+import javax.inject.{Inject, Singleton}
+import models.Borrowing.borrowingForm
 import play.api.i18n._
 import play.api.mvc._
 import services.books.BookService
@@ -25,21 +23,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   val Home: Result = Redirect(routes.BorrowingController.list())
 
-  /**
-    * Describe the borrowing form (used in both edit and create screens).
-    */
-  val borrowingForm = Form(
-    mapping(
-      "id_friend" -> text,
-      "id_book" -> text,
-      "borrowing_date" -> date,
-      "is_lost" -> optional(text),
-      "is_damaged" -> optional(text),
-      "return_date" -> optional(date),
-      "comment" -> optional(text)
-    )(Borrowing.apply)(Borrowing.unapplyForm)
-  )
-
+  val bF = borrowingForm(bookService, friendService)
   // ------ Actions
 
   /**
@@ -65,7 +49,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     */
   def edit(id_friend: Long, id_book: Long, date: String) = Action { implicit request =>
     borrowingService.findByPk(id_friend, id_book, LocalDate.parse(date)).map { borrowing =>
-      Ok(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), borrowingForm.fill(borrowing)))
+      Ok(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), bF.fill(borrowing)))
     }.getOrElse(NotFound)
   }
 
@@ -77,7 +61,7 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     * @param date      Borrowing date
     */
   def update(id_friend: Long, id_book: Long, date: String) = Action { implicit request =>
-    borrowingForm.bindFromRequest.fold(
+    bF.bindFromRequest.fold(
       formWithErrors => BadRequest(html.borrowing.editForm(id_friend, id_book, LocalDate.parse(date), formWithErrors)),
       borrowing => {
         borrowingService.update(borrowing)
@@ -90,14 +74,14 @@ class BorrowingController @Inject()(borrowingService: BorrowingService,
     * Display the 'new borrowing form'.
     */
   def create = Action { implicit request =>
-    Ok(html.borrowing.createForm(borrowingForm, friendService.findAll(), bookService.findAll()))
+    Ok(html.borrowing.createForm(bF, friendService.findAll(), bookService.findAll()))
   }
 
   /**
     * Handle the 'new borrowing form' submission.
     */
   def save = Action { implicit request =>
-    borrowingForm.bindFromRequest.fold(
+    bF.bindFromRequest.fold(
       formWithErrors => BadRequest(html.borrowing.createForm(formWithErrors, friendService.findAll(), bookService.findAll())),
       borrowing => {
         borrowingService.borrow(borrowing)

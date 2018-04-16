@@ -1,7 +1,6 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
 import models.Genre.genreForm
 import play.api.i18n._
 import play.api.mvc._

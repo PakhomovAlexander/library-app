@@ -72,7 +72,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     *
     * @param id The book id
     */
-  override def findById(id: Long): Option[Book] = db.withConnection { implicit connection =>
+  override def findById(id: BigInt): Option[Book] = db.withConnection { implicit connection =>
     val book = SQL("select * from book where id = {id}")
       .on('id -> id)
       .as(simple.singleOpt)
@@ -97,7 +97,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     * @param orderBy  Book property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "name", filter: String = "%"): Page[Book] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int, filterBy: String = "name", filter: String = "%"): Page[Book] = {
 
     val offset = pageSize * page
 
@@ -149,7 +149,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     * @param id   The book id
     * @param book The book value.
     */
-  override def update(id: Long, book: Book): Unit = {
+  override def update(id: BigInt, book: Book): Unit = {
     db.withConnection { implicit connection =>
       book.pub_house.fold(
         SQL(
@@ -257,7 +257,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
     *
     * @param id Id of the book to delete.
     */
-  override def delete(id: Long): Unit = {
+  override def delete(id: BigInt): Unit = {
     db.withConnection { implicit connection =>
       SQL("delete from book where id = {id}").on('id -> id).executeUpdate()
       SQL(
@@ -275,7 +275,7 @@ class BookServiceH2Impl @Inject()(dbapi: DBApi,
 
   private def pubHouse(id: Long) = publishingHouseService.findById(id)
 
-  private def deleteGenres(book_id: Long) = {
+  private def deleteGenres(book_id: BigInt) = {
     db.withConnection { implicit connection =>
       SQL("delete from book_genre where id_book = {id_book}")
         .on('id_book -> book_id)
