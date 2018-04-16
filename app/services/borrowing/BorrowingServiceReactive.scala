@@ -1,6 +1,6 @@
 package services.borrowing
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZoneId}
 import java.util.Date
 
 import javax.inject.Inject
@@ -45,12 +45,12 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   private def toMongoBorrowing(borrowing: Borrowing): MongoBorrowing = {
-    var book = new BSONObjectID
+    var book = BSONObjectID.generate()
     try {
       book = BSONObjectID.parse(borrowing.book.id.bigInteger.toString(16)).get
     }
 
-    var friend = new BSONObjectID
+    var friend = BSONObjectID.generate()
     try {
       friend = BSONObjectID.parse(borrowing.friend.id.get.bigInteger.toString(16)).get
     }
@@ -62,6 +62,27 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
       borrowing.is_damaged,
       borrowing.return_date,
       borrowing.comment)
+
+  }
+
+  private def toMongoBorrowing(id_friend: BigInt, id_book: BigInt, date: LocalDate): MongoBorrowing = {
+    var book = BSONObjectID.generate()
+    try {
+      book = BSONObjectID.parse(id_book.bigInteger.toString(16)).get
+    }
+
+    var friend = BSONObjectID.generate()
+    try {
+      friend = BSONObjectID.parse(id_friend.bigInteger.toString(16)).get
+    }
+
+    MongoBorrowing(book,
+      friend,
+      Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant),
+      Option.empty,
+      Option.empty,
+      Option.empty,
+      Option.empty)
 
   }
 
@@ -98,7 +119,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     Await.result(future, Duration.Inf).map(f => toBorrowing(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoBorrowing]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toBorrowing(f))
@@ -107,7 +128,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   override def findAll(): List[Borrowing] = {
-    val future = collection.flatMap(_.find().cursor[MongoBorrowing]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]()))
 
     Await.result(future, Duration.Inf).map(f => toBorrowing(f))
@@ -123,18 +144,22 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   override def findByPk(id_friend: BigInt, id_book: BigInt, date: LocalDate): Option[Borrowing] = {
-    var book = new BSONObjectID
+    var book = BSONObjectID.generate()
     try {
       book = BSONObjectID.parse(id_book.bigInteger.toString(16)).get
     }
 
-    var friend = new BSONObjectID
+    var friend = BSONObjectID.generate()
     try {
       friend = BSONObjectID.parse(id_friend.bigInteger.toString(16)).get
     }
 
+    val search = toMongoBorrowing(id_friend, id_book, date)
+
     val future = collection.flatMap(_.
-      find("book" -> book, "friend" -> friend, "borrow_date" -> date)
+      find(BSONDocument("book" -> search.book,
+        "friend" -> search.friend,
+        "borrow_date" -> search.borrow_date))
       .cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]()))
 
