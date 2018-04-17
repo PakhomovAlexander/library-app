@@ -1,9 +1,8 @@
 package services.friends
 
-import javax.inject.{Inject, Singleton}
-
 import anorm.SqlParser.{get, scalar}
 import anorm.{SQL, ~}
+import javax.inject.{Inject, Singleton}
 import models.Friend
 import play.api.db.DBApi
 import services.Page
@@ -63,7 +62,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
       val friends = SQL(
         """
           select * from friend
-          where {filterBy} like {filter}
+          where """ + filterBy + """ like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """

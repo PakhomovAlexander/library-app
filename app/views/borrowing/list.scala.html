@@ -49,26 +49,29 @@
     <table class="friend zebra-striped">
         <thead>
             <tr>
-                @header(2, "friend name")
-                @header(3, "book name")
-                @header(3, "borrow date")
-                @header(4, "lost")
-                @header(5, "damaged")
-                @header(6, "return date")
-                @header(7, "comment")
+                @header(2, "Friend name")
+                @header(3, "Book name")
+                @header(3, "Borrow date")
+                @header(4, "Lost")
+                @header(5, "Damaged")
+                @header(6, "Return date")
+                @header(7, "Comment")
+                @header(8, "Edit")
             </tr>
         </thead>
         <tbody>
 
     @borrowings.map { borrowing =>
             <tr>
-                <td><a href="@routes.FriendsController.edit(borrowing.friend.id.get)">@borrowing.friend.fio</a></td>
-                <td><a href="@routes.BookController.edit(borrowing.book.id)">@borrowing.book.name</a></td>
+                <td><a href="@routes.FriendsController.edit(borrowing.friend.id.get.toString)">@borrowing.friend.fio</a></td>
+                <td><a href="@routes.BookController.edit(borrowing.book.id.toString)">@borrowing.book.name</a></td>
                 <td>@borrowing.borrow_date</td>
                 <td>@borrowing.is_lost.getOrElse { <em>-</em> } </td>
                 <td>@borrowing.is_damaged.getOrElse { <em>-</em> } </td>
                 <td>@borrowing.return_date.getOrElse { <em>-</em> } </td>
                 <td>@borrowing.comment.getOrElse { <em>-</em> } </td>
+                <td><a href="@routes.BorrowingController.edit(borrowing.friend.id.get.toString,
+                    borrowing.book.id.toString, borrowing.borrow_date.toString)">Edit</a></td>
             </tr>
         }
 

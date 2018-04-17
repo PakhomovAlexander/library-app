@@ -1,6 +1,6 @@
 package services.borrowing
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZoneId}
 import java.util.Date
 
 import javax.inject.Inject
@@ -45,12 +45,12 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   private def toMongoBorrowing(borrowing: Borrowing): MongoBorrowing = {
-    var book = new BSONObjectID
+    var book = BSONObjectID.generate()
     try {
       book = BSONObjectID.parse(borrowing.book.id.bigInteger.toString(16)).get
     }
 
-    var friend = new BSONObjectID
+    var friend = BSONObjectID.generate()
     try {
       friend = BSONObjectID.parse(borrowing.friend.id.get.bigInteger.toString(16)).get
     }
@@ -65,21 +65,54 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
 
   }
 
+  private def toMongoBorrowing(id_friend: BigInt, id_book: BigInt, date: LocalDate): MongoBorrowing = {
+    var book = BSONObjectID.generate()
+    try {
+      book = BSONObjectID.parse(id_book.bigInteger.toString(16)).get
+    }
+
+    var friend = BSONObjectID.generate()
+    try {
+      friend = BSONObjectID.parse(id_friend.bigInteger.toString(16)).get
+    }
+
+    MongoBorrowing(book,
+      friend,
+      Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant),
+      Option.empty,
+      Option.empty,
+      Option.empty,
+      Option.empty)
+
+  }
+
+  private def mapOrder(ord: Int) = ord match {
+    case 1 => "book"
+    case 2 => "friend"
+    case 3 => "borrow_date"
+    case 4 => "is_lost"
+    case 5 => "is_damaged"
+    case 6 => "return_date"
+    case 7 => "comment"
+  }
+
+
   def collection: Future[BSONCollection] = database.map(
-    _.collection[BSONCollection]("friends"))
+    _.collection[BSONCollection]("borrowings"))
   implicit def personWriter: BSONDocumentWriter[MongoBorrowing] = Macros.writer[MongoBorrowing]
   implicit def personReader: BSONDocumentReader[MongoBorrowing] = Macros.reader[MongoBorrowing]
 
 
 
 
-  override def list(page: Int, pageSize: Int, orderBy: String, filterBy: String, filter: String): Page[Borrowing] = {
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String = "borrow_date", filter: String): Page[Borrowing] = {
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
     val future = collection.flatMap(_.find(selector)
-      .sort(BSONDocument(orderBy -> 1))
+      .sort(BSONDocument(mapOrder(orderBy) -> 1))
       .skip(offset)
       .cursor[MongoBorrowing]()
       .collect[List](pageSize, Cursor.FailOnError[List[MongoBorrowing]]())) // .FailOnError - обработчик иключения
@@ -87,7 +120,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
     Await.result(future, Duration.Inf).map(f => toBorrowing(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoBorrowing]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toBorrowing(f))
@@ -96,7 +129,7 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   override def findAll(): List[Borrowing] = {
-    val future = collection.flatMap(_.find().cursor[MongoBorrowing]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]()))
 
     Await.result(future, Duration.Inf).map(f => toBorrowing(f))
@@ -112,22 +145,26 @@ class BorrowingServiceReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi,
   }
 
   override def findByPk(id_friend: BigInt, id_book: BigInt, date: LocalDate): Option[Borrowing] = {
-    var book = new BSONObjectID
+    var book = BSONObjectID.generate()
     try {
       book = BSONObjectID.parse(id_book.bigInteger.toString(16)).get
     }
 
-    var friend = new BSONObjectID
+    var friend = BSONObjectID.generate()
     try {
       friend = BSONObjectID.parse(id_friend.bigInteger.toString(16)).get
     }
 
+    val search = toMongoBorrowing(id_friend, id_book, date)
+
     val future = collection.flatMap(_.
-      find("book" -> book, "friend" -> friend, "borrow_date" -> date)
+      find(BSONDocument("book" -> search.book,
+        "friend" -> search.friend,
+        "borrow_date" -> search.borrow_date))
       .cursor[MongoBorrowing]()
       .collect[List](-1, Cursor.FailOnError[List[MongoBorrowing]]()))
 
-    Option(Await.result(future, Duration.Inf).map(f => toBorrowing(f)).head)
+    Await.result(future, Duration.Inf).map(f => toBorrowing(f)).headOption
   }
 
   override def update(borrowing: Borrowing): Unit = {

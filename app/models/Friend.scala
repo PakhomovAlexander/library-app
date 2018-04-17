@@ -1,5 +1,8 @@
 package models
 
+import play.api.data.Form
+import play.api.data.Forms._
+
 case class Friend(id: Option[BigInt],
                   fio: String,
                   phone_number: Option[String],
@@ -8,19 +11,43 @@ case class Friend(id: Option[BigInt],
                   comment: Option[String])
 
 object Friend {
+  /**
+    * Describe the friend form (used in both edit and create screens).
+    */
+  val friendForm = Form(
+    mapping(
+      "id" -> ignored(None: Option[String]),
+      "FIO" -> nonEmptyText.verifying("The fio can contain only letters!", fio => isName(fio)),
+      "Phone number" -> optional(text).verifying("Phone number should contains 0-9", num => isNumber(num)),
+      "Social networks" -> optional(text),
+      "Email" -> optional(email),
+      "Comment" -> optional(text)
+    )(Friend.applyForm)(Friend.unapplyForm)
+  )
 
-  def apply(id: BigInt,
+  def applyForm(id: Option[String],
             fio: String,
-            phone_number: String,
-            social_number: String,
-            email: String,
-            comment: String): Friend = new
+            phone_number: Option[String],
+            social_number: Option[String],
+            email: Option[String],
+            comment: Option[String]): Friend = new
       Friend(
-        Option(id),
+//        Option(BigInt(id.get)),
+        id map ( x => BigInt(x) ),
         fio,
-        Option(phone_number),
-        Option(social_number),
-        Option(email),
-        Option(comment)
+        phone_number,
+        social_number,
+        email,
+        comment
       )
+
+  def unapplyForm(arg: Friend): Option[(Option[String], String, Option[String],
+    Option[String], Option[String], Option[String])] =
+    Option(arg.id.map(_ toString), arg.fio, arg.phone_number, arg.social_number, arg.email, arg.comment)
+
+  private def isNumber(num: Option[String]) = num.fold(true)(
+    n => n.matches("""^([0-9]|-)+$""")
+  )
+
+  private def isName(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
 }

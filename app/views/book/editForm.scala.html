@@ -1,5 +1,6 @@
-@(id: Long, bookForm: Form[Book], genres: List[Genre])(implicit messages: Messages)
-@genresOpt = @{ genres map ("" -> _.name) }
+@(id: String, bookForm: Form[Book], genres: List[Genre], bookGenres: List[Genre], houses: List[PublishingHouse])(implicit messages: Messages)
+@genresOpt = @{ genres map (genre => genre.id.toString -> genre.name) }
+@housesOpt = @{ houses.map(house => house.id.toString -> house.name).+:("-99", "No house") }
     @import b3.vertical.fieldConstructor
 
 
@@ -8,16 +9,39 @@
         <h1>Edit book</h1>
 
         @b3.form(action = routes.BookController.update(id)) {
-            <fieldset>
-                @b3.text(bookForm("name"), '_label -> "name", '_help -> "")
-                @b3.text(bookForm("author"), '_label -> "author", '_help -> "")
-                @b3.date(bookForm("pub_year"), '_label -> "pub_year", '_help -> "")
-                @b3.text(bookForm("pub_author"), '_label -> "pub_author", '_help -> "")
-                @b3.text(bookForm("translator"), '_label -> "translator", '_help -> "")
-                @b3.text(bookForm("comment"), '_label -> "comment", '_help -> "")
-                @b3.number(bookForm("pub_house"), '_label -> "pub_house", '_help -> "")
-                @b3.select( bookForm("genres"), options = genresOpt, '_custom -> true, '_label -> "Genres" )
-            </fieldset>
+            <div class = "row form-row">
+                @b3.text(bookForm("name"), '_label -> "Name", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.text(bookForm("author"), '_label -> "Author", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.date(bookForm("pub_year"), '_label -> "Publishing year", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.text(bookForm("pub_author"), '_label -> "Picture author", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.text(bookForm("translator"), '_label -> "Translator", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+                @b3.text(bookForm("comment"), '_label -> "Comment", '_help -> "")
+            </div>
+
+            <div class = "row form-row">
+            @b3.select( bookForm("pub_house"), options = housesOpt, '_label -> "Publishing house" )
+            </div>
+
+            <div class = "row form-row">
+            @b3.select( bookForm("genres"), options = genresOpt, '_label -> "Genres",
+                'multiple -> true, 'value ->  s"'${bookGenres.map(_.id.toString).mkString(",")}'")
+            </div>
+
             <div class="actions">
                 <input type="submit" value="Save this book" class="btn primary"> or
                 <a href="@routes.BookController.list()" class="btn">Close</a>

@@ -1,10 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
-import models.Book
-import play.api.data.Form
-import play.api.data.Forms.{ignored, mapping, _}
+import models.Book.bookForm
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller, Result}
 import services.books.BookService
@@ -23,25 +20,9 @@ class BookController @Inject()(bookService: BookService,
     */
   val Home: Result = Redirect(routes.BookController.list())
 
-  /**
-    * Describe the book form (used in both edit and create screens).
-    */
-  val bookForm = Form(
-    mapping(
-      "id" -> ignored[Long](-99L),
-      "name" -> nonEmptyText,
-      "author" -> nonEmptyText,
-      "pub_year" -> optional(date),
-      "pub_author" -> optional(text),
-      "translator" -> optional(text),
-      "comment" -> optional(text),
-      "pub_house_id" -> optional(longNumber),
-      "genres" -> play.api.data.Forms.list(longNumber)
-    )(Book.apply)(Book.unapplyForm)
-  )
-
   // ------ Actions
 
+  val bF = bookForm(publishingHouseService, genreService)
   /**
     * Display the paginated list of books.
     *
@@ -61,9 +42,10 @@ class BookController @Inject()(bookService: BookService,
     *
     * @param id Id of the book to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    bookService.findById(id).map { book =>
-      Ok(html.book.editForm(id, bookForm.fill(book), book.genres))
+  def edit(id: String) = Action { implicit request =>
+    bookService.findById(BigInt(id)).map { book =>
+      Ok(html.book.editForm(id, bF.fill(book), genreService.findAll(),
+        book.genres, publishingHouseService.findAll()))
     }.getOrElse(NotFound)
   }
 
@@ -72,11 +54,12 @@ class BookController @Inject()(bookService: BookService,
     *
     * @param id Id of the book to edit
     */
-  def update(id: Long) = Action { implicit request =>
-    bookForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.book.editForm(id, formWithErrors, null)),
+  def update(id: String) = Action { implicit request =>
+    bF.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.book.editForm(id, formWithErrors, genreService.findAll(),
+        bookService.findById(BigInt(id)).get.genres, publishingHouseService.findAll())),
       book => {
-        bookService.update(id, book)
+        bookService.update(BigInt(id), book)
         Home.flashing("success" -> s"Book ${book.name} has been updated")
       }
     )
@@ -86,15 +69,15 @@ class BookController @Inject()(bookService: BookService,
     * Display the 'new book form'.
     */
   def create = Action { implicit request =>
-    Ok(html.book.createForm(bookForm, null))
+    Ok(html.book.createForm(bF, genreService.findAll(), publishingHouseService.findAll()))
   }
 
   /**
     * Handle the 'new book form' submission.
     */
   def save = Action { implicit request =>
-    bookForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.book.createForm(formWithErrors, null)),
+    bF.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.book.createForm(formWithErrors, genreService.findAll(), publishingHouseService.findAll())),
       book => {
         bookService.insert(book)
         Home.flashing("success" -> s"Book ${book.name} has been created")
@@ -105,8 +88,8 @@ class BookController @Inject()(bookService: BookService,
   /**
     * Handle book deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    bookService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    bookService.delete(BigInt(id))
     Home.flashing("success" -> "Book has been deleted")
   }
 }

@@ -7,10 +7,9 @@
     <h1>Add a publishing house</h1>
 
     @b3.form(routes.PublishingHouseController.save()) {
-
-        <fieldset>
-            @b3.text(houseForm("name"), '_label -> "name", '_help -> "")
-        </fieldset>
+        <div class = "row form-row">
+            @b3.text(houseForm("Name"), '_label -> "Name", '_help -> "")
+        </div>
 
         <div class="actions">
             <input type="submit" value="Create this publishing house" class="btn primary"> or

@@ -60,7 +60,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
       val houses = SQL(
         """
           select * from publishing_house
-          where {filterBy} like {filter}
+          where """ + filterBy + """ like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """

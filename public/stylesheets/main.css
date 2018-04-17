@@ -64,3 +64,19 @@ table.friends .header a {
 #pagination ul .current a {
     color: #666;
 }
+
+input:valid { color: green; }
+input:invalid { color: red; }
+
+.form-row {
+    margin-top: 1%;
+}
+
+.help-block {
+    margin-left: 10%;
+    content: none;
+}
+
+.control-label {
+    padding-right: 1%;
+}

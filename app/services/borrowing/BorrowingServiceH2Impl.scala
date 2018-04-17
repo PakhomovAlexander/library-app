@@ -30,8 +30,8 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     get[Option[Date]]("borrowing.return_date") ~
     get[Option[String]]("borrowing.comment") map {
       case id_book ~ id_friend ~ borrow_date ~ is_lost ~ is_damaged ~ return_date ~ comment =>
-        Borrowing(bookService.findById(id_book).orNull,
-          friendService.findById(id_friend).orNull,
+        Borrowing(bookService.findById(id_book).get,
+          friendService.findById(id_friend).get,
           borrow_date,
           is_lost,
           is_damaged,
@@ -87,8 +87,8 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
     * @param filter   Filter applied on the filterBy column
     * @param filterBy Column to be filtered
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String,
-                    filterBy: String = "name", filter: String = "%"): Page[Borrowing] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
+                    filterBy: String = "borrow_date", filter: String = "%"): Page[Borrowing] = {
 
     val offset = pageSize * page
 
@@ -97,7 +97,7 @@ class BorrowingServiceH2Impl @Inject() (dbapi: DBApi,
       val borrowings = SQL(
         """
           select * from borrowing
-          where {filterBy} like {filter}
+          where """ + filterBy + """ like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """

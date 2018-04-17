@@ -49,14 +49,14 @@
     <table class="friend zebra-striped">
         <thead>
             <tr>
-                @header(2, "name")
+                @header(2, "Name")
             </tr>
         </thead>
         <tbody>
 
         @houses.map { house =>
             <tr>
-                <td><a href="@routes.PublishingHouseController.edit(house.id)">@house.name</a></td>
+                <td><a href="@routes.PublishingHouseController.edit(house.id.toString)">@house.name</a></td>
             </tr>
         }
 

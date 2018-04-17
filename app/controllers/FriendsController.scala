@@ -1,10 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
-import models.Friend
-import play.api.data.Forms._
-import play.api.data._
+import models.Friend.friendForm
 import play.api.i18n._
 import play.api.mvc._
 import services.friends.FriendService
@@ -19,20 +16,6 @@ class FriendsController @Inject()(friendService: FriendService,
     * This result directly redirect to the application home.
     */
   val Home: Result = Redirect(routes.FriendsController.list())
-
-  /**
-    * Describe the friend form (used in both edit and create screens).
-    */
-  val friendForm = Form(
-    mapping(
-      "id" -> ignored(None:Option[Long]),
-      "FIO" -> nonEmptyText,
-      "Phone number" -> optional(text),
-      "Social networks" -> optional(text),
-      "Email" -> optional(text),
-      "Comment" -> optional(text)
-    )(Friend.apply)(Friend.unapply)
-  )
 
   // ------ Actions
 
@@ -55,8 +38,8 @@ class FriendsController @Inject()(friendService: FriendService,
     *
     * @param id Id of the friend to edit
     */
-  def edit(id: Long) = Action { implicit request =>
-    friendService.findById(id).map { friend =>
+  def edit(id: String) = Action { implicit request =>
+    friendService.findById(BigInt(id)).map { friend =>
       Ok(html.friend.editForm(id, friendForm.fill(friend)))
     }.getOrElse(NotFound)
   }
@@ -66,11 +49,11 @@ class FriendsController @Inject()(friendService: FriendService,
     *
     * @param id Id of the friend to edit
     */
-  def update(id: Long) = Action { implicit request =>
+  def update(id: String) = Action { implicit request =>
     friendForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.friend.editForm(id, formWithErrors)),
       friend => {
-        friendService.update(id, friend)
+        friendService.update(BigInt(id), friend)
         Home.flashing("success" -> s"Friend ${friend.fio} has been updated")
       }
     )
@@ -99,8 +82,8 @@ class FriendsController @Inject()(friendService: FriendService,
   /**
     * Handle friend deletion.
     */
-  def delete(id: Long) = Action { implicit request =>
-    friendService.delete(id)
+  def delete(id: String) = Action { implicit request =>
+    friendService.delete(BigInt(id))
     Home.flashing("success" -> "Friend has been deleted")
   }
 }

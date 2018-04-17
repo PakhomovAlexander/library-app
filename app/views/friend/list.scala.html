@@ -60,7 +60,7 @@
 
         @friends.map { friend =>
             <tr>
-                <td><a href="@routes.FriendsController.edit(friend.id.get)">@friend.fio</a></td>
+                <td><a href="@routes.FriendsController.edit(friend.id.get.toString)">@friend.fio</a></td>
                 <td>
                 @friend.phone_number.getOrElse {
                     <em>-</em>

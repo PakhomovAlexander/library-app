@@ -60,7 +60,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
       val genres = SQL(
         """
           select * from genre
-          where {filterBy} like {filter}
+          where """ + filterBy + """ like {filter}
           order by {orderBy} nulls last
           limit {pageSize} offset {offset}
         """
@@ -94,6 +94,7 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     */
   override def update(id: BigInt, genre: Genre): Unit = {
     db.withConnection { implicit connection =>
+      genre.parent_genre.fold(
       SQL(
         """
               update genre
@@ -103,7 +104,18 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
       ).on(
         'name -> genre.name,
         'id -> id
-      ).executeUpdate()
+      ).executeUpdate())( parent =>
+        SQL(
+          """
+              update genre
+              set name = {name}, id_parent_genre = {id_parent_genre}
+              where id = {id}
+            """
+          ).on(
+          'name -> genre.name,
+          'id_parent_genre -> parent.id,
+          'id -> id
+      ).executeUpdate())
     }
   }
 
@@ -114,9 +126,15 @@ class GenreServiceH2Impl @Inject()(dbapi: DBApi) extends GenreService {
     */
   override def insert(genre: Genre): Unit = {
     db.withConnection { implicit connection =>
-      SQL(
-        """ insert into genre(id, name) values ( {id}, {name} ) """
-      ).on('id -> genre.id, 'name -> genre.name).executeUpdate()
+      genre.parent_genre.fold(SQL(
+        """ insert into genre(id, name) values (
+          |(select next value for genre_seq), {name}) """.stripMargin
+      ).on( 'name -> genre.name).executeUpdate())(  parent =>
+        SQL(
+          """ insert into genre(id, name, id_parent_genre) values (
+            |(select next value for genre_seq), {name}, {id_parent_genre} ) """.stripMargin
+        ).on( 'name -> genre.name, 'id_parent_genre -> parent.id).executeUpdate()
+      )
     }
   }
 

@@ -25,7 +25,7 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
   }
 
   private def toMongoPublishingHouse(publishingHouse: PublishingHouse): MongoPublishingHouse = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(publishingHouse.id.bigInteger.toString(16)).get
     }
@@ -39,7 +39,7 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
   }
 
   private def toMongoPublishingHouse(id: BigInt): MongoPublishingHouse = {
-    var _id = new BSONObjectID
+    var _id = BSONObjectID.generate()
     try {
       _id = BSONObjectID.parse(id.bigInteger.toString(16)).get
     }
@@ -51,6 +51,11 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
 
   }
 
+  private def mapOrder(ord: Int) = ord match {
+    case 1 => "_id"
+    case 2 => "name"
+  }
+
 
   def collection: Future[BSONCollection] = database.map(
     _.collection[BSONCollection]("publishinghouses"))
@@ -58,13 +63,14 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
   implicit def personReader: BSONDocumentReader[MongoPublishingHouse] = Macros.reader[MongoPublishingHouse]
 
 
-  override def list(page: Int, pageSize: Int, orderBy: String, filterBy: String, filter: String): Page[PublishingHouse] ={
+  override def list(page: Int, pageSize: Int, orderBy: Int, filterBy: String, filter: String): Page[PublishingHouse] ={
     val offset = pageSize * page
+    val filterReg = filter filter (_ != '%')
 
-    val selector = BSONDocument(filterBy -> BSONRegex(filter, "i"))
+    val selector = BSONDocument(filterBy -> BSONRegex(s"(.*)$filterReg(.*)", "i"))
 
     val future = collection.flatMap(_.find(selector)
-      .sort(BSONDocument(orderBy -> 1))
+      .sort(BSONDocument(mapOrder(orderBy) -> 1))
       .skip(offset)
       .cursor[MongoPublishingHouse]()
       .collect[List](pageSize, Cursor.FailOnError[List[MongoPublishingHouse]]())) // .FailOnError - обработчик иключения
@@ -72,7 +78,7 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
     Await.result(future, Duration.Inf).map(f => toPublishingHouse(f))
 
 
-    val totalRows = Await.result(collection.flatMap(_.find().cursor[MongoPublishingHouse]()
+    val totalRows = Await.result(collection.flatMap(_.find(BSONDocument()).cursor[MongoPublishingHouse]()
       .collect[List](-1, Cursor.FailOnError[List[MongoPublishingHouse]]())), Duration.Inf)
 
     val result = Await.result(future, Duration.Inf).map(f => toPublishingHouse(f))
@@ -82,22 +88,24 @@ class PublishingHouseReactive @Inject()(val reactiveMongoApi: ReactiveMongoApi) 
   }
 
   override def findAll(): List[PublishingHouse] = {
-    val future = collection.flatMap(_.find().cursor[MongoPublishingHouse]()
+    val future = collection.flatMap(_.find(BSONDocument()).cursor[MongoPublishingHouse]()
       .collect[List](-1, Cursor.FailOnError[List[MongoPublishingHouse]]())) // .FailOnError - обработчик иключения
 
     Await.result(future, Duration.Inf).map(f => toPublishingHouse(f))
   }
 
   override def findById(id: BigInt): Option[PublishingHouse] = {
-    val future = collection.flatMap(_.find("_id" -> id).cursor[MongoPublishingHouse]()
+    val search = toMongoPublishingHouse(id)
+
+    val future = collection.flatMap(_.find(BSONDocument("_id" -> search._id)).cursor[MongoPublishingHouse]()
       .collect[List](-1, Cursor.FailOnError[List[MongoPublishingHouse]]())) // .FailOnError - обработчик иключения
 
-    Option(Await.result(future, Duration.Inf).map(f => toPublishingHouse(f)).head)
+    Await.result(future, Duration.Inf).map(f => toPublishingHouse(f)).headOption
   }
 
   override def update(id: BigInt, entity: PublishingHouse): Unit = {
     val search = toMongoPublishingHouse(id)
-    val mongoPublishingHouse = toMongoPublishingHouse(entity)
+    val mongoPublishingHouse = toMongoPublishingHouse(entity).copy(_id = search._id)
 
     val selector = document("_id" -> search._id)
 

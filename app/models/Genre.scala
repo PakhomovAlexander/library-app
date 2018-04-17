@@ -1,19 +1,44 @@
 package models
 
+import play.api.data.Form
+import play.api.data.Forms.{ignored, mapping, optional, _}
 import services.genres.GenreService
 
-case class Genre(id: BigInt, name: String, parent_genre: Option[Genre])
+case class Genre(id: BigInt, name: String, parent_genre: Option[Genre]){
+  override def toString: String = s"$name ${parent_genre.fold("")(genre => s"// $genre")}"
+}
 
 object Genre {
-
-  def apply(id: BigInt, name: String, parent_id_opt: Option[BigInt])(
-    implicit genreService: GenreService): Genre = {
-    new Genre(
-      id, name, if (parent_id_opt.isDefined) genreService.findById(parent_id_opt.get) else Option.empty[Genre]
+  /**
+    * Describe the genre form (used in both edit and create screens).
+    */
+  lazy val genreForm: ((GenreService) => Form[Genre]) = (genreService: GenreService) => {
+    implicit val gen: GenreService = genreService
+    Form(
+      mapping(
+        "id" -> ignored[String]("-99"),
+        "Name" -> nonEmptyText.verifying("The fio can contain only letters!", name => isName(name)),
+        "Parent" -> optional(text)
+      )(Genre.apply)(Genre.unapplyForm)
     )
   }
 
-  def unapplyForm(arg: Genre): Option[(BigInt, String, Option[BigInt])] = {
-    Option(arg.id, arg.name, if (arg.parent_genre.isDefined) Option(arg.parent_genre.get.id) else Option.empty[BigInt])
+  def apply(id: String, name: String, parent_id_opt: Option[String])(
+    implicit genreService: GenreService): Genre = {
+    new Genre(
+      BigInt(id),
+      name,
+      parent_id_opt.fold(Option.empty[Genre])(p => genreService.findById(BigInt(p)))
+    )
   }
+
+  def unapplyForm(arg: Genre): Option[(String, String, Option[String])] = {
+    Option(
+      arg.id.toString,
+      arg.name,
+      arg.parent_genre.map(_.id.toString)
+    )
+  }
+
+  private def isName(fio: String) = fio.matches("""^([a-zA-Z\s])+$""")
 }

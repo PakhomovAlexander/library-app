@@ -49,15 +49,15 @@
     <table class="friend zebra-striped">
         <thead>
             <tr>
-                @header(2, "name")
-                @header(3, "parent genres")
+                @header(2, "Name")
+                @header(3, "Parent genres")
             </tr>
         </thead>
         <tbody>
 
     @genres.map { genre =>
             <tr>
-                <td><a href="@routes.GenreController.edit(genre.id)">@genre.name</a></td>
+                <td><a href="@routes.GenreController.edit(genre.id.toString)">@genre.name</a></td>
                 <td>@genre.parent_genre.getOrElse { <em>-</em> } </td>
             </tr>
         }
