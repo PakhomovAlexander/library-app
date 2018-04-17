@@ -53,7 +53,7 @@ class FriendServiceH2Impl @Inject()(dbapi: DBApi) extends FriendService {
     * @param orderBy  Friend property used for sorting
     * @param filter   Filter applied on the name column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filterBy: String = "fio", filter: String = "%"): Page[Friend] = {
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String, filterBy: String = "fio", filter: String = "%"): Page[Friend] = {
 
     val offset = pageSize * page
 

@@ -50,7 +50,7 @@ class PublishingHouseServiceH2Impl @Inject() (dbapi: DBApi) extends PublishingHo
     * @param orderBy  Publishing house property used for sorting
     * @param filter   Filter applied on the filter column
     */
-  override def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
+  override def list(page: Int = 0, pageSize: Int = 10, orderBy: String,
                     filterBy: String = "name", filter: String = "%"): Page[PublishingHouse] = {
 
     val offset = pageSize * page
